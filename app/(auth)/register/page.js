@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { FiUser, FiHome,FiUserPlus } from 'react-icons/fi';
+import axios from '../../axios';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -16,9 +17,17 @@ export default function Register() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Envie os dados de registro para a API ou serviço de autenticação
+    
+    try {
+      const response = await axios.post('/api/register', formData); // Faz a solicitação ao backend
+      console.log('Resposta do servidor:', response.data);
+      // Lógica adicional de redirecionamento ou feedback ao usuário
+    } catch (error) {
+      console.error('Erro:', error);
+      // Lógica para lidar com erros
+    }
   };
 
   return (

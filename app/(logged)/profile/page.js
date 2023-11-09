@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from 'react';
+import { BiIdCard } from "react-icons/bi";
 
 export default function Profile() {
   const [userProfile, setUserProfile] = useState({
@@ -24,13 +25,15 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex flex-col">
-      <header className="p-4 ">
-        <h1 className="text-3xl font-extrabold text-slate-100 text-center">Editar Perfil</h1>
-      </header>
-      <div className="flex flex-row bg-slate-900 text-slate-800 flex-1 ">
+    <div className="min-h-screen flex items-center justify-around bg-slate-900">
+      
+     
       
       <div className="w-full max-w-md m-4 p-2 mx-auto bg-white rounded-lg shadow-md h-fit">
+      <div className='flex flex-row items-center justify-center'>
+    <BiIdCard className='text-[40px] text-gray-800 my-4' />
+        <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">Editar Perfil</h2>
+        </div>
         <form onSubmit={handleSubmit} className="p-4">
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-600">Nome:</label>
@@ -64,7 +67,7 @@ export default function Profile() {
         </form>
       </div>
 
-      </div>
+      
     </div>
   );
 }

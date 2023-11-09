@@ -22,7 +22,7 @@ export default function Home() {
         <h1 className="text-6xl font-extrabold text-gray-900">NextSocialApp</h1>
         <p className="mt-4 text-lg text-gray-600 text-center">Seja bem-vindo</p>
         </div>
-        <TfiComments className='text-[100px] text-gray-800 m-4'/>
+        <TfiComments className='text-[100px] text-purple-800 m-4 drop-shadow-lg'/>
         {/* <LuGlobe2 className='text-[100px] text-gray-800 m-4'/> */}
         </div>
         <Link href="/login"  className={` flex flex-1/2 gap-2 text-2xl  text-gray-300`}>

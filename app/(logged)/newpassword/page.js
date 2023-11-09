@@ -1,8 +1,7 @@
 "use client"
 import { useState } from 'react';
-import Link from 'next/link';
-import { FiHome } from 'react-icons/fi';
-import { TfiUnlock } from 'react-icons/tfi';
+
+import { BsKey } from 'react-icons/bs';
 
 export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -18,7 +17,7 @@ export default function ChangePassword() {
     <div className="min-h-screen flex items-center justify-around bg-slate-900">
       <div className="w-full max-w-md p-4 bg-white rounded-md">
         <div className='flex flex-row items-center justify-center'>
-    <TfiUnlock className='text-[40px] text-gray-800 my-4' />
+    <BsKey className='text-[40px] text-gray-800 my-4' />
         <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">Alterar Senha</h2>
         </div>
         <form onSubmit={handleSubmit}>
