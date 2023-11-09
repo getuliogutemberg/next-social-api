@@ -17,7 +17,7 @@ export default function ChangePassword() {
     <div className="min-h-screen flex items-center justify-around bg-slate-900">
       <div className="w-full max-w-md p-4 bg-white rounded-md">
         <div className='flex flex-row items-center justify-center'>
-    <BsKey className='text-[40px] text-gray-800 my-4' />
+    <BsKey className='text-[40px] text-purple-800 my-4' />
         <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">Alterar Senha</h2>
         </div>
         <form onSubmit={handleSubmit}>
@@ -28,7 +28,7 @@ export default function ChangePassword() {
               id="currentPassword"
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-gray-900"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             />
           </div>
           <div className="mb-4">
@@ -38,7 +38,7 @@ export default function ChangePassword() {
               id="newPassword"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-gray-900"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             />
           </div>
           <div className="mb-6">
@@ -48,12 +48,12 @@ export default function ChangePassword() {
               id="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-400 text-gray-900"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             />
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-400"
+            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900"
           >
             Alterar Senha
           </button>

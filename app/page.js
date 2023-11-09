@@ -4,10 +4,10 @@ import { FiLogIn } from 'react-icons/fi';
 import { TfiComments } from 'react-icons/tfi'
 
 
-export const metadata = {
-  title: 'NextSocialApi',
-  description: 'Developed by github.com/getuliogutemberg',
-}
+// export const metadata = {
+//   title: 'NextSocialApi',
+//   description: 'Developed by github.com/getuliogutemberg',
+// }
 export default function Home() {
 
 
@@ -25,8 +25,8 @@ export default function Home() {
         <TfiComments className='text-[100px] text-purple-800 m-4 drop-shadow-lg'/>
         {/* <LuGlobe2 className='text-[100px] text-gray-800 m-4'/> */}
         </div>
-        <Link href="/login"  className={` flex flex-1/2 gap-2 text-2xl  text-gray-300`}>
-                <FiLogIn />Login
+        <Link href="/login"  className={` flex items-center justify-center gap-2 text-2xl  text-gray-300 hover:text-purple-800`}>
+                <FiLogIn className='text-[40px]  my-4 flex items-center justify-center' /><h3 className='text-white font-extrabold text-xl'>Login</h3>
         </Link>
       </div>
 

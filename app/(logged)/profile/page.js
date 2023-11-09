@@ -31,7 +31,7 @@ export default function Profile() {
       
       <div className="w-full max-w-md m-4 p-2 mx-auto bg-white rounded-lg shadow-md h-fit">
       <div className='flex flex-row items-center justify-center'>
-    <BiIdCard className='text-[40px] text-gray-800 my-4' />
+    <BiIdCard className='text-[40px] text-purple-800 my-4' />
         <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">Editar Perfil</h2>
         </div>
         <form onSubmit={handleSubmit} className="p-4">
@@ -43,7 +43,7 @@ export default function Profile() {
               name="name"
               value={userProfile.name}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-400"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-900"
             />
           </div>
           <div className="mb-6">
@@ -54,13 +54,13 @@ export default function Profile() {
               name="imageUrl"
               value={userProfile.imageUrl}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-400"
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-900"
             />
           </div>
           {/* Outros campos do perfil */}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-400"
+            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900"
           >
             Salvar Alterações
           </button>

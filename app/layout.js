@@ -8,7 +8,10 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
-
+export const metadata = {
+  title: 'NextSocialApi',
+  description: 'Developed by github.com/getuliogutemberg',
+}
 
 export default function RootLayout({ children }) {
   
@@ -25,7 +28,6 @@ export default function RootLayout({ children }) {
         
         {children}
         
-
       
         
         </body>
