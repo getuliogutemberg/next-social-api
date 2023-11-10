@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { FiHome ,FiUserPlus,FiLogIn} from 'react-icons/fi';
 import { useRouter } from 'next/navigation'
 import axios from '../../axios';
-import { stringify } from 'postcss';
+
 
 
 
@@ -43,20 +43,26 @@ export default function Login() {
 
       router.push('/openview');
     } catch (error) {
-      console.log('Erro na solicitação:', error);
+      console.log('Erro ao entrar.', error);
       setIsLoggedIn({
         status: false,
-        message: 'Email ou senha inválidos',
+        message: error.response.data.message,
       })
       setTimeout(() => {
         setIsLoggedIn({
           status: false,
           message: '',
         })
-      }, 5000);
+
+        router.push(
+          '/register'
+        );
+      }, 3000);
     }
     // Envie os dados de login para a API ou serviço de autenticação
   };
+
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-around bg-slate-900">

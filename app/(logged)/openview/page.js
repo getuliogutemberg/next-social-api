@@ -1,13 +1,39 @@
 "use client";
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { TbMessageShare } from 'react-icons/tb';
+import { SyncLoader } from 'react-spinners';
+ 
+
+  
 
 export default function Verified() {
+
+  const router = useRouter();
+
   const [isEmailVerified, setEmailVerified] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);  // Adicionado estado para controle de autenticação
+  const [isLoggedIn, setIsLoggedIn] = useState('carregando...');  // Adicionado estado para controle de autenticação
   const [verificationCompleted, setVerificationCompleted] = useState(false);
+
+  
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
+  
   const [usersRegistred, setUsersRegistered] = useState([]);
+  const [posts, setPosts] = useState([]);
+
+  const getPosts = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/posts');
+      console.log(response.data.posts);
+      setPosts(response.data.posts);
+    } catch (error) {
+      console.log('Erro ao buscar os posts:', error);
+    }
+  }
+  
 
   const getUsers = async () => {
     try {
@@ -18,22 +44,52 @@ export default function Verified() {
       console.log('Erro ao buscar os usuários:', error);
     }
   };
+
+  // Função para definir a ordem de classificação
+const compareUsers = (userA, userB) => {
+  // Priorize usuários logados (active) primeiro
+  if (userA.status === 'active' && userB.status !== 'active') {
+    return -1;
+  } else if (userA.status !== 'active' && userB.status === 'active') {
+    return 1;
+  }
+
+  // Se ambos estiverem no mesmo estado, ordene por ordem alfabética do nome
+  const nameComparison = userA.name.localeCompare(userB.name);
+
+  if (nameComparison !== 0) {
+    return nameComparison;
+  }
+
+  // Se ambos estiverem no mesmo estado e tiverem o mesmo nome, ordene por nível de autorização (status)
+  const authorizationComparison = userB.authorizationLevel - userA.authorizationLevel;
+
+  return authorizationComparison;
+};
+
+  useEffect(() => {
+    usersRegistred.map((user) => {
+      if (JSON.parse(localStorage.getItem('user')) && user.email === JSON.parse(localStorage.getItem('user')).email && user.status === 'active') {
+        return setIsLoggedIn(true);
+      }
+      setIsLoggedIn(false)
+
+      router.push('/login');
+      
+      
+    });
+    
+  },[])
+
+  useEffect(() => {
+    isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
+  },[isLoggedIn])
+
+
   useEffect(() => {
     getUsers()
-    // setUsersRegistered([
-    //   {
-    //        name: 'Getulio',
-    //        email: 'getulio.dev@gmail.com',
-    //        password: '12345',
-    //        status: 'logouted'
-    //      },
-    //      {
-    //        name: 'Mayra',
-    //        email: 'Mayra@email.com',
-    //        password: '123456',
-    //        status: 'logouted'
-    //      }
-    //    ])
+    getPosts()
+    
   },[isLoggedIn])
  
   const verifyEmail = async () => {
@@ -56,6 +112,49 @@ export default function Verified() {
 
   };
 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Verifique se todos os campos obrigatórios estão preenchidos
+    if (!title || !description) {
+      alert('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    const userData = JSON.parse(localStorage.getItem('user'));
+
+// Crie um novo objeto sem a propriedade 'password'
+const { password, ...userWithoutPassword } = userData;
+
+    // Crie um objeto com os dados do novo post
+    const newPost = {
+      title,
+      description,
+      image,
+      createdBy: userWithoutPassword, // Substitua pelo nome do usuário real
+      
+    };
+
+    try {
+      // Chame a função de callback para enviar o novo post para o servidor
+      const response = await axios.post('http://localhost:5000/api/posts',newPost)
+      console.log(newPost);
+      // Limpe os campos do formulário
+    setTitle('');
+    setDescription('');
+    setImage('');
+    return console.log(response.data);
+    } catch (error) {
+      console.log('Erro ao criar o post:', error.response.data.message);
+    }
+    
+    
+
+    
+  };
+
+
   useEffect(() => {
     if (!verificationCompleted) {
     verifyEmail();
@@ -66,9 +165,11 @@ export default function Verified() {
     setIsLoggedIn(localStorage.getItem('user') !== null ? true : false)
   },[])
 
-  if (isLoggedIn && !isEmailVerified) {
+  if (isLoggedIn === true && !isEmailVerified) {
     return (
+
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-gray-800">
+         
         <div className="max-w-md p-4 bg-white rounded-lg shadow-md text-center ">
           <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center"><TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Seu email ainda não foi verificado.</h2>
           <p>Por favor, verifique seu email para acessar a seção aberta.</p>
@@ -77,32 +178,145 @@ export default function Verified() {
     );
   }
 
-  return (
-    <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-full p-4 ">
-     
-    <div className="col-span-4 row-span-4"><div className="bg-white rounded-lg shadow-md text-center h-full ">
-    <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center"><TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Pagina de listagem aberta</h2>
-    <p>aqui vai o conteudo aberto</p>
-  </div></div>
-
-    <div className="row-span-5 col-start-5 " >  <div className="bg-white rounded-lg shadow-md text-center h-full ">
-    <h2 className="text-2xl font-extrabold mb-4">Lista de Usuarios</h2>
-    <p>aqui é a lista de usuarios</p>
-    {usersRegistred.map((user) => (
-      <div key={user.email} className="mb-4">
-        <p>{user.name}</p>
-        <p>{user.email}</p>
-        <p>{user.password}</p>
-        <p>{user.status}</p>
+  if(isLoggedIn === false && !isEmailVerified) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-gray-800">
+        <div className="max-w-md p-4 bg-white rounded-lg shadow-md text-center ">
+          <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center"><TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Usuario Nao Logado </h2>
+          
+          <p>Voce nao esta Logado.</p><SyncLoader color="purple" className="mt-4"/>
+        </div>
+        
       </div>
-    ))}
-    </div></div>
+    );
+  }
 
-    <div className="col-span-4 row-start-5 ">
-    <div className=" bg-white rounded-lg shadow-md text-center h-full ">
-    <h2 className="text-2xl font-extrabold mb-4">novo post</h2>
-    <p>aqui vai o conteudo aberto</p>
+  
+
+  return (
+    <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-[100vh] p-4 ">
+    
+    <div className="col-span-4 row-span-4  bg-white rounded-lg text-center overflow-auto">
+      <h2 className="text-2xl font-extrabold mb-4 flex flex-1 items-center justify-center">
+        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Posts</h2>
+      {/* <p>aqui vai o conteudo aberto</p> */}
+      <div className=' flex flex-col gap-4 items-center'>
+
+      
+      {posts.map((post)=>{
+        return (
+          <div className="bg-gray-100 rounded-lg shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 w-[700px]" onClick={() => router.push(`/openview/${post.title}`)}>
+            <div className="flex justify-end items-center pt-0 relative top-4 right-4">
+                
+
+                <div>
+                  <p className="font-bold">{post.createdBy.name}</p>
+                
+                </div>
+                <img
+                  src={post.createdBy.imageURL}
+                  alt={post.createdBy.name}
+                  className="w-6 h-6 rounded-full ml-2"
+                />
+                
+              </div>
+              <h2 className='text-6xl font-extrabold relative bottom-4 text-left ml-4 '>{post.title}</h2>
+            <img
+                src={post.image}
+                alt={" "}
+                className="rounded object-fit relative w-[670px] bottom-20 hover:scale-150 h-[250px] opacity-40 hover:opacity-100 hover:bottom-[-10%] hover:transition-all hover:duration-300 z-20"
+              />
+              <span className="text-gray-800 text-start text-[30px] mx-4 bottom-10 relative z-10">{post.description}</span>
+            
+              <span className="text-gray-800 text-end text-[20px] font-extralight  mx-4 mt-3">{new Date(post.updatedAt).toLocaleString()}</span>
+             
+      
+      
+      
+
+            
+
+            
+
+          </div>
+        )
+      }).reverse()}
+
+      </div>
+    </div>
+    
+
+    
+    <div className="row-span-5 col-start-5 bg-white rounded-lg shadow-md text-center h-full  overflow-auto">
+    <h2 className="text-2xl font-extrabold mb-4 ">Usuários</h2>
+    {/* <p>aqui é a lista de usuarios</p> */}
+    {usersRegistred.sort(compareUsers).map((user) => (
+
+<div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={user.status === 'active' ? () => router.push(`/openview/${user.email}`) : null} >
+  <div className="w-2/3  text-end">
+    <h2 className="text-xl font-bold mb-0">{user.name}</h2>
+    <p className="text-gray-600 mb-0 text-sm">{user.email}</p>
+    <p className={`text-xs font-semibold ${user.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+      {user.status === 'active' ? 'Logado' : 'Desconectado'}
+    </p>
   </div>
+  <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
+</div>
+
+    ))}
+
+    </div>
+    
+
+    
+      <div className="col-span-4 row-start-5 bg-white rounded-lg shadow-md text-center p-4 ">
+        {/* <h2 className="text-2xl font-extrabold mb-4">Novo Post</h2> */}
+        <form onSubmit={handleSubmit} className="flex gap-4">
+          <div className="flex-1 flex-col gap-4 flex ">
+
+          <div className="flex gap-4">
+            {/* <label htmlFor="title" className="block text-gray-600 text-left">Título:</label> */}
+            <input
+            placeholder='Título'
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-[70%] border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+            />
+            {/* <label htmlFor="image" className="block text-gray-600 text-left">Imagem (URL):</label> */}
+            <input
+              placeholder='Imagem (URL)'
+              type="text"
+              id="image"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              className="w-[30%]  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+            />
+          </div>
+         
+          <div className=" ">
+            {/* <label htmlFor="description" className="block text-gray-600 text-left">Descrição:</label> */}
+            <textarea
+              placeholder='Descrição'
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows="4"
+              className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+            ></textarea>
+          </div>
+          
+          </div>
+          <button
+            type="submit"
+            className="w-60 h-[10vh] min-h-fit m-2 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
+          >
+            Postar
+          </button>
+        </form>
+      
     </div>
 
       

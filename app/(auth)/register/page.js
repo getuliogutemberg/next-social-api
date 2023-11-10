@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FiUser, FiHome,FiUserPlus } from 'react-icons/fi';
 import axios from '../../axios';
 import { useRouter } from 'next/navigation';
 
 export default function Register() {
+
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,7 +20,11 @@ export default function Register() {
     error: null,
   });
 
-  const router = useRouter();
+  useEffect(() => {
+    console.log(router)
+  },[])
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -34,12 +40,13 @@ export default function Register() {
       console.log('Resposta do servidor:', response.data.message);
       console.log('Resposta do servidor:', response.data.user);
       // Lógica adicional de redirecionamento ou feedback ao usuário
-
+      localStorage.setItem('authToken', response.data.authToken);
+      localStorage.setItem('user', JSON.stringify(response.data.user));
       // Registro bem-sucedido
       setRegistrationStatus({ success: true, error: null });
       
       // Redirecionar para a página desejada (por exemplo, a página de login)
-      router.push('/login');
+      router.push('/openview');
 
 
     } catch (error) {

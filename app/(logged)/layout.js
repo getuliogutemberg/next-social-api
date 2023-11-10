@@ -20,12 +20,16 @@ const inter = Inter({ subsets: ['latin'] })
 
 
 export default function RootLayout({ children }) {
+
   const router = useRouter();
   const pathname = usePathname()
+  
 
-  useEffect(() => {
-    console.log(pathname)
-  },[pathname])
+ 
+
+  
+
+  
   
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -34,21 +38,28 @@ export default function RootLayout({ children }) {
   };
 
   const logout = async () => {
-    await axios.post('http://localhost:5000/api/logout', {email:JSON.parse(localStorage.getItem('user')).email});
-
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('user');
+    try {
+      const response = await axios.post('http://localhost:5000/api/logout', {email:JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user')).email : ''});
+      console.log(response.data);
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('user');
+      router.push('/');
+    }
+    catch (error) {
+      console.log("erro ao deslogar",error.response.data.message);
+    }
       
-    router.push('/');
     
   }
+
+  
 
   return (
    
       
 
         <div className='flex'>
-        <div  onMouseLeave={() => setIsNavOpen(false)} className={`min-h-screen flex-row bg-purple-950 p-0 transition-all ease-in-out duration-2000 ${isNavOpen ? 'w-128' : 'w-16'} border-r-2 border-purple-500`}>
+        <div  onMouseLeave={() => setIsNavOpen(false)} className={`min-h-[100vh] flex-row bg-purple-950 p-0 transition-all ease-in-out duration-2000 ${isNavOpen ? 'w-128' : 'w-16'} border-r-2 border-purple-500`}>
         <h2 className="text-white text-2xl font-bold mx-3 my-3 " onClick={toggleNav}>
             <span className="cursor-pointer flex items-center">{isNavOpen ? (<><FiChevronLeft className='text-purple-700 w-10 h-10   '/>{isNavOpen && <h3 className='text-white font-extrabold text-xl  transition-all ease-in-out duration-2000 hover:text-purple-700'>Fechar</h3>}</>): <FiMenu className='text-white w-10 h-10  hover:text-purple-700'/>}</span>
           </h2>

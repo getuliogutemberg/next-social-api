@@ -11,6 +11,7 @@
     "client": "next dev"
   },
   "dependencies": {
+    "@material-tailwind/react": "^2.1.4",
     "axios": "^1.6.1",
     "concurrently": "^8.2.2",
     "cors": "^2.8.5",
@@ -18,7 +19,8 @@
     "next": "14.0.1",
     "react": "^18",
     "react-dom": "^18",
-    "react-icons": "^4.11.0"
+    "react-icons": "^4.11.0",
+    "react-spinners": "^0.13.8"
   },
   "devDependencies": {
     "autoprefixer": "^10.0.1",
