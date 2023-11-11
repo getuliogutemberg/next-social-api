@@ -4,14 +4,15 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { TbMessageShare } from 'react-icons/tb';
 import { SyncLoader } from 'react-spinners';
+import { usePathname } from 'next/navigation';
  
 
   
 
-export default function Verified() {
+export default function Postview({ params }) {
 
   const router = useRouter();
-
+  const pathname = usePathname()
   const [isEmailVerified, setEmailVerified] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState('carregando...');  // Adicionado estado para controle de autenticação
   const [verificationCompleted, setVerificationCompleted] = useState(false);
@@ -82,7 +83,7 @@ const compareUsers = (userA, userB) => {
   },[])
 
   useEffect(() => {
-    // isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
+    isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
   },[isLoggedIn])
 
 
@@ -102,7 +103,7 @@ const compareUsers = (userA, userB) => {
 
       setVerificationCompleted(true);
     } catch (error) {
-      console.log(' erro na verificação', error);
+      console.log(' erro na verificação', error.response.data.message);
       setEmailVerified(false);
       setVerificationCompleted(true);
     }
@@ -155,11 +156,11 @@ const { password, ...userWithoutPassword } = userData;
   };
 
 
-  // useEffect(() => {
-  //   if (!verificationCompleted) {
-  //   verifyEmail();
-  //   }
-  // },[verificationCompleted])
+  useEffect(() => {
+    if (!verificationCompleted) {
+    verifyEmail();
+    }
+  },[verificationCompleted])
  
   useEffect(() => {
     setIsLoggedIn(localStorage.getItem('user') !== null ? true : false)
@@ -196,16 +197,17 @@ const { password, ...userWithoutPassword } = userData;
   return (
     <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-[100vh] p-4 ">
     
-    <div className="col-span-4 row-span-4   rounded-lg text-center overflow-auto">
+    <div className="col-span-4 row-span-5   rounded-lg text-center overflow-auto">
       <div className="text-2xl font-extrabold mb-4 flex flex-1 items-center justify-center">
-        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">Open List</h2></div>
+        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">Post: {params.post}</h2></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
-      <div className=' flex flex-col gap-4 items-center'>
+      <div className=' flex flex-col items-start'>
 
       
-      {posts.map((post)=>{
+      {posts.filter((post) => post.title === params.post).map((post)=>{
         return (
-          <div className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 max-w-[500px]" onClick={() => router.push(`/openview/${post.title}`)}>
+          <div key={post._id} className='flex flex-row justify-between'>
+          <div className="bg-gray-100 rounded-lg  shadow-md p-4 flex flex-col justify-between cursor-pointer w-[full] max-h-[710px] mb-4" onClick={() => router.push(`/openview/${post.title}`)}>
             <div className='flex flex-row justify-between'>
                 <h2 className='text-6xl font-extrabold  text-left  '>{post.title}</h2>
             <div className='flex flex-col'> 
@@ -227,22 +229,112 @@ const { password, ...userWithoutPassword } = userData;
             <img
                 src={post.image}
                 alt={" "}
-                className="rounded object-cover  w-[100%] bottom-20 opacity-40 z-10"
+                className="rounded object-cover  w-[100%] h-[100%] bottom-20 opacity-40 z-10"
               />
               <span className="text-gray-800 text-start text-[30px] mx-4 bottom-10 z-10">{post.description}</span>
-
+              {post.comments !== undefined && post.comments.map((comment) => {
+                return (
+                  <div>
+                    <p className="text-gray-800 text-start text-[20px] mx-4 bottom-10 z-10">{comment.content}</p>
+                  </div>
+                )
+              })}
               <div className='flex flex-row justify-between'> 
 
-              {post.comments!==undefined && post.comments.length > 0 && <span>comentarios: {post.comments.length}</span>}
+              {post.comments!==undefined && post.comments.length > 0 && <span> comentatrios: {post.comments.length}</span>}
               {post.likes!==undefined && post.likes.length > 0 && <span>likes: {post.likes.length}</span>}
+              
+
               </div>
+            
+
+          </div>
+
+          <div className="flex flex-col gap-4 mx-4">
+          {posts.filter((post) => post.title !== params.post).map((post)=>{
+        return (
+          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  p-4 flex flex-col justify-center items-center cursor-pointer max-w-64 max-h-64" onClick={() => router.push(`/openview/${post.title}`)}>
+            <div className="flex">
+                
+
+              
+                
+                
+              </div>
+              <h2 className='text-xl font-extrabold  text-left  '></h2>
+            <img
+                src={post.image}
+                alt={" "}
+                className="rounded object-cover opacity-40  w-64 h-64 hover:transition-all hover:duration-300 z-20"
+              />
+             
+            
+             <div>
+                  <p className="font-bold">{post.createdBy.name} - {post.title}</p>
+                  <span className="text-gray-800 text-end text-xs font-extralight  mx-4 mt-3">{new Date(post.updatedAt).toLocaleString()}</span>
+                </div>
+             
+      
+                {post.comments!==undefined && post.comments.length > 0 && <span> comentatrios: {post.comments.length}</span>}
+                {post.likes!==undefined && post.likes.length > 0 && <span>likes: {post.likes.length}</span>}
+      
+      
+
+            
+
             
 
           </div>
         )
       }).reverse()}
+            </div>
+            </div>
+        )
+      }).reverse()}
+
+      
+
+
 
       </div>
+
+
+<div className="bg-white rounded-lg shadow-md text-center p-4 overflow-auto ">
+        {/* <h2 className="text-2xl font-extrabold mb-4">Novo Post</h2> */}
+        <form onSubmit={handleSubmit} className="flex gap-4">
+          <div className="flex-1 flex-row gap-4 flex ">
+
+            
+            <img
+              src={JSON.parse(localStorage.getItem('user')).imageURL}
+              alt="Imagem"
+              className="w-32 h-32 rounded-full object-cover"
+            />
+            {/* <h3 className="text-2xl font-extrabold  flex flex-1 items-center justify-start">{JSON.parse(localStorage.getItem('user')).name}</h3> */}
+            
+            <textarea
+              placeholder='Comentário'
+              type="text"
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows="4"
+              className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+            ></textarea>
+     
+         
+          
+          
+          </div>
+          <button
+            type="submit"
+            className="w-60 h-[10vh] min-h-fit m-2 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
+          >
+            Comentar
+          </button>
+        </form>
+      
+    </div>
     </div>
     
 
@@ -266,68 +358,7 @@ const { password, ...userWithoutPassword } = userData;
     ))}
 
     </div>
-    
-
-    
-      <div className="col-span-4 row-start-5 bg-white rounded-lg shadow-md text-center p-4 overflow-auto ">
-        {/* <h2 className="text-2xl font-extrabold mb-4">Novo Post</h2> */}
-        <form onSubmit={handleSubmit} className="flex gap-4">
-          <div className="flex-1 flex-col gap-4 flex ">
-
-          <div className="flex gap-4">
-            {/* <label htmlFor="title" className="block text-gray-600 text-left">Título:</label> */}
-            <input
-            placeholder='Título'
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-[70%] border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
-            />
-            {/* <label htmlFor="image" className="block text-gray-600 text-left">Imagem (URL):</label> */}
-            <input
-              placeholder='Imagem (URL)'
-              type="text"
-              id="image"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              className="w-[30%]  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
-            />
-          </div>
-         
-          <div className=" ">
-            {/* <label htmlFor="description" className="block text-gray-600 text-left">Descrição:</label> */}
-            <textarea
-              placeholder='Descrição'
-              type="text"
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows="4"
-              className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
-            ></textarea>
-          </div>
-          
-          </div>
-          <button
-            type="submit"
-            className="w-60 h-[10vh] min-h-fit m-2 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
-          >
-            Postar
-          </button>
-        </form>
-      
-    </div>
-
-      
-        
-        
-    
-
-      
-
-
-      
+  
   </div>
   );
 }
