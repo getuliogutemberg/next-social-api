@@ -69,10 +69,7 @@ const whitelist = [
 
 
 
-// Importe e use as rotas definidas em Auth.js, Profile.js, Admin.js e outras rotas.
-const authRoutes = require('./routes/Auth');
-const profileRoutes = require('./routes/ProfileRoutes');
-const adminRoutes = require('./routes/AdminRoutes');
+
 
 
 

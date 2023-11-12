@@ -82,7 +82,7 @@ const compareUsers = (userA, userB) => {
   },[])
 
   useEffect(() => {
-    // isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
+    isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
   },[isLoggedIn])
 
 
@@ -155,11 +155,11 @@ const { password, ...userWithoutPassword } = userData;
   };
 
 
-  // useEffect(() => {
-  //   if (!verificationCompleted) {
-  //   verifyEmail();
-  //   }
-  // },[verificationCompleted])
+  useEffect(() => {
+    if (!verificationCompleted) {
+    verifyEmail();
+    }
+  },[verificationCompleted])
  
   useEffect(() => {
     setIsLoggedIn(localStorage.getItem('user') !== null ? true : false)
