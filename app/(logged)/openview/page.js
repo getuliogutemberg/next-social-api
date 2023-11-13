@@ -303,13 +303,16 @@ export default function Verified() {
   // Ajuste a ordem da subtração se desejar ordenar de outra forma
   return timeB - timeA;
 }).map((post)=>{
+        if (post.level > 0) {
+          return null;
+        }
         // console.log(posts);
         return (
           <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 w-[95%] max-h-[600px]">
                 {post.created_at !== null && <span className="text-gray-800 text-center text-sm font-extralight  mx-4 mt-0">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm (zzzz)", {
                 locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
               })}</span>}
-            <div  onClick={() => router.push(`/openview/${post.id}`)} className='flex flex-row justify-between'>
+            <div  onClick={() => router.push(`/postview/${post.id}`)} className='flex flex-row justify-between'>
             <div className='flex flex-col'> 
               <div className="flex justify-center items-center ml-4">
                 <img
@@ -329,7 +332,7 @@ export default function Verified() {
                 {/* <h2 className='text-3xl font-extrabold  text-left capitalize '>{post.title}</h2> */}
           
             </div>
-            <div  onClick={() => router.push(`/openview/${post.id}`)} className='flex flex-row gap-4 overflow-x-hidden'>
+            <div  onClick={() => router.push(`/postview/${post.id}`)} className='flex flex-row gap-4 overflow-x-hidden'>
             <img
                 src={post.image}
                 alt={" "}
@@ -339,7 +342,7 @@ export default function Verified() {
             </div>
             <div className='flex flex-row justify-end gap-4 mx-4'> 
 
-            <p  onClick={() => router.push(`/openview/${post.id}`)} className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
+            <p  onClick={() => router.push(`/postview/${post.id}`)} className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
             <p onClick={() => JSON.parse(localStorage.getItem('user')).id !== post.createdBy.id && handleLike(post)} className=" cursor-pointer text-red-400 text-bold hover:scale-150 flex gap-4">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
             
             </div>

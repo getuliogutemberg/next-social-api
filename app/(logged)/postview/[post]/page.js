@@ -12,7 +12,9 @@ import {TfiComments} from 'react-icons/tfi';
 import {AiFillHeart,AiOutlineHeart} from 'react-icons/ai';
   import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
+import {IoArrowBack} from 'react-icons/io5';
+import Link from 'next/link';
+import {HiLockClosed} from 'react-icons/hi';
 export default function Postview({ params }) {
 
   const router = useRouter();
@@ -55,7 +57,7 @@ export default function Postview({ params }) {
 
   useEffect(() => {
     posts.filter((post) => post.id === params.post).map((post) => {
-      setPost(post);
+      setPostOpened(post);
     }
     )
   }, [posts]);
@@ -200,7 +202,7 @@ const compararDatas = (a, b) => {
     await updateDoc(doc(db, "posts", params.post),
     {
      comments: [
-       ...post.comments,
+       ...postOpened.comments,
        {
          comment: comment,
          user: JSON.parse(localStorage.getItem('user')),
@@ -258,7 +260,7 @@ const compararDatas = (a, b) => {
     );
   }
 
-  const [post, setPost] = useState({
+  const [postOpened, setPostOpened] = useState({
     title: '',
     description: '',
     image: '',
@@ -298,7 +300,7 @@ const compararDatas = (a, b) => {
     <div className="col-span-4 row-span-5   rounded-lg text-center overflow-auto max-h-[100vh]">
       
       <div className="text-2xl  mb-4 flex flex-1 items-center justify-start">
-        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">   {post.level ? <span className='text-red-400'>Privado</span> : <span className='text-white'>Público</span>}</h2></div>
+        <Link href={postOpened.level ? '/secretview' : '/openview'} className="text-white"><IoArrowBack className="text-white"/></Link> <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">   {postOpened.level ? <span className='text-red-400'>Privado</span> : <span className='text-white'>Público</span>}</h2></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
       <div className=' flex flex-col items-start '>
 
@@ -314,6 +316,7 @@ const compararDatas = (a, b) => {
                 <div className='flex flex-row gap-4'> 
              <a href={"#comments"}><p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p></a>
             <p onClick={() => JSON.parse(localStorage.getItem('user')).id !== post.createdBy.id && handleLike(post)} className=" cursor-pointer text-red-400 text-bold hover:scale-150 flex gap-4">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
+            {postOpened.level === 1 && <p className="cursor-pointer text-yellow-400 text-bold hover:scale-150 flex gap-4"><HiLockClosed className='scale-150' /><p className='text-slate-900 text-xl'>Secreto</p></p> }
             </div>
             
             </div>
@@ -390,10 +393,15 @@ const compararDatas = (a, b) => {
 
           </div>
 
-          {posts.filter((post) => post.id !== params.post) && <div className="flex flex-col gap-4   overflow-auto overflow-x-hidden rounded min-w-[300px] mb-4">
-          {posts.filter((post) => post.id !== params.post).map((post)=>{
+          {posts.filter((post) => post.id !== params.post  ) && <div className="flex flex-col gap-4   overflow-auto overflow-x-hidden rounded min-w-[300px] mb-4">
+          {posts.filter((post) => {
+            return post.id !== params.post
+          }).map((post)=>{
+             if (postOpened.level !== post.level) {
+              return null;
+            }
         return (
-          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  flex flex-col justify-center items-center cursor-pointer w-[300px] min-h-[300px]" onClick={() => router.push(`/openview/${post.id}`)}>
+          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  flex flex-col justify-center items-center cursor-pointer w-[300px] min-h-[300px]" onClick={() => router.push(`/postview/${post.id}`)}>
           
              
             <img
@@ -407,7 +415,8 @@ const compararDatas = (a, b) => {
       <div className='flex flex-row gap-4'> 
       <p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
             <p  className="text-red-400 text-bold hover:scale-150 flex gap-4 cursor-pointer">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
-            
+            {post.level === 1 && <p className="cursor-pointer text-yellow-400 text-bold hover:scale-150 flex gap-4"><HiLockClosed className='scale-150' /></p> }
+
             </div>
     
       
