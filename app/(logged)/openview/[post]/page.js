@@ -9,7 +9,7 @@ import { getDoc, query, querySnapshot,collection, getDocs,onSnapshot } from 'fir
 import {db} from '../../../firebase';
 import { addDoc ,updateDoc,doc} from 'firebase/firestore';
 import {TfiComments} from 'react-icons/tfi';
-import {AiFillHeart} from 'react-icons/ai';
+import {AiFillHeart,AiOutlineHeart} from 'react-icons/ai';
   import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -254,6 +254,32 @@ const compararDatas = (a, b) => {
     level: 0
   });
 
+  const handleLike = async (post) => {
+    if(post.likes.filter(like => like.id === JSON.parse(localStorage.getItem('user')).id).length > 0) {
+      const likesAfter = post.likes.filter(like => like.id !== JSON.parse(localStorage.getItem('user')).id);
+      
+      await updateDoc(doc(db, "posts", post.id),
+    {
+     likes: [
+       ...likesAfter,
+     ],
+    })
+    return
+    };
+
+    await updateDoc(doc(db, "posts", post.id),
+    {
+     likes: [
+       ...post.likes,
+       {
+         id: JSON.parse(localStorage.getItem('user')).id,
+         date: new Date(),
+       },
+       
+     ],
+    })
+  }
+
   return (
     <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-[100vh] p-4 ">
     
@@ -274,8 +300,8 @@ const compararDatas = (a, b) => {
             <div className='flex flex-row justify-between'>
                 <h2 className='text-3xl font-extrabold  text-left  capitalize'>{post.title}</h2>
                 <div className='flex flex-row gap-4'> 
-             <p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
-            <p  className="text-red-400 text-bold hover:scale-150 flex gap-4"><AiFillHeart  className='scale-150'/><p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
+             <a href={"#comments"}><p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p></a>
+            <p onClick={() => JSON.parse(localStorage.getItem('user')).id !== post.createdBy.id && handleLike(post)} className="text-red-400 text-bold hover:scale-150 flex gap-4">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
             </div>
             
             </div>
@@ -313,7 +339,7 @@ const compararDatas = (a, b) => {
               
               
               </div> */}
-              <div className="flex flex-col gap-4 rounded min-w-[300px] mt-4">
+              <div className="flex flex-col gap-4 rounded min-w-[300px] mt-4" id='comments'>
               {post.comments.length > 0 && post.comments.sort(compararDatas).map((comment) => {
                 console.log(post)
                 return (
@@ -322,7 +348,10 @@ const compararDatas = (a, b) => {
                     (
                       <div className="flex flex-col justify-center items-end gap-2">
                     <div className="flex flex-row justify-center items-center gap-2 ">
-                    <p className="text-gray-800 text-start text-sm  bg-white rounded-lg p-2 italic capitalize">{comment.comment}</p>
+                      <div className='flex flex-row  '>
+                    <p className="text-gray-800  text-start text-sm  bg-white rounded-lg rounded-tr-none p-2 italic capitalize">{comment.comment}</p>
+                      <div className="border-[7px] border-r-transparent border-b-transparent border-white w-[7px] h-[7px]" />
+                    </div>
                     <p className="font-extralight text-md">{comment.user.name}</p>
                         <img src={comment.image} alt="" className="w-10 h-10 rounded-full" />
                    
