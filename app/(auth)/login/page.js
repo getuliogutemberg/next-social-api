@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { FiHome ,FiUserPlus,FiLogIn} from 'react-icons/fi';
 import { useRouter } from 'next/navigation'
 import axios from '../../axios';
-
+import { doc, getDocs,collection, query, updateDoc, where, limit } from "firebase/firestore";
+import {db} from '../../firebase';
 
 
 
@@ -29,24 +30,70 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Dados do formulário:', formData);
-    try {
-      const response = await axios.post('http://localhost:5000/api/login', formData);
-      console.log('Resposta do servidor:', response.data.message);
-      console.log('token:', response.data.authToken);
-      localStorage.setItem('authToken', response.data.authToken);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      setIsLoggedIn({
-        status: true,
-        message: response.data.message,
-      })
 
-      router.push('/openview');
-    } catch (error) {
-      console.log('Erro ao entrar.', error);
+    // console.log('Dados do formulário:', formData);
+    // try {
+    //   const response = await axios.post('http://localhost:5000/api/login', formData);
+    //   console.log('Resposta do servidor:', response.data.message);
+    //   console.log('token:', response.data.authToken);
+    //   localStorage.setItem('authToken', response.data.authToken);
+    //   localStorage.setItem('user', JSON.stringify(response.data.user));
+    //   setIsLoggedIn({
+    //     status: true,
+    //     message: response.data.message,
+    //   })
+
+    //   router.push('/openview');
+    // } catch (error) {
+    //   console.log('Erro ao entrar.', error);
+    //   setIsLoggedIn({
+    //     status: false,
+    //     message: error.response.data.message,
+    //   })
+    //   setTimeout(() => {
+    //     setIsLoggedIn({
+    //       status: false,
+    //       message: '',
+    //     })
+
+    //     router.push(
+    //       '/register'
+    //     );
+    //   }, 3000);
+    // }
+    // Envie os dados de login para a API ou serviço de autenticação
+
+    // login com email e senha no firebase
+    try {
+    const usersCollection = collection(db, "users");
+    const querySnapshot = await getDocs(query(usersCollection, where("email", "==", formData.email), where("password", "==", formData.password), limit(1)));
+
+    if (querySnapshot.docs.length > 0) {
+      // Usuário encontrado, atualizar o status para "active"
+      const userDoc = querySnapshot.docs[0];
+      const userRef = doc(db, "users", userDoc.id);
+
+      const {password, ...user} = userDoc.data();
+      localStorage.setItem("user", JSON.stringify(user)); // Atualizar o localStorage com o ID do userRef);
+      await updateDoc(userRef, {
+        status: "active",
+        updated_at: new Date(),
+      });
+      setIsLoggedIn(
+        {
+          status: true,
+          message: "Login bem-sucedido!",
+        }
+      )
+      console.log("Login bem-sucedido!");
+      router.push('/openview')
+      // Adicione aqui a lógica para redirecionar para a rota /openview
+    } else {
+      // Usuário não encontrado
+      console.error("Usuário não encontrado");
       setIsLoggedIn({
         status: false,
-        message: error.response.data.message,
+        message: 'Email ou senha inválido. Por favor, tente novamente.',
       })
       setTimeout(() => {
         setIsLoggedIn({
@@ -54,12 +101,30 @@ export default function Login() {
           message: '',
         })
 
-        router.push(
-          '/register'
-        );
+        // router.push(
+        //   '/register'
+        // );
       }, 3000);
+      // Adicione aqui a lógica para lidar com o erro (por exemplo, exibir uma mensagem de erro)
+    }} catch (error) {
+      // Tratar erros
+      console.error("Erro ao fazer login:", error.message ,'Redirecionando para o registro em 3s...');
+      setIsLoggedIn({
+        status: false,
+        message: error.message,
+      })
+      setTimeout(() => {
+            setIsLoggedIn({
+              status: false,
+              message: '',
+            })
+    
+            router.push(
+              '/register'
+            );
+          }, 3000);
+      // Adicione aqui a lógica para lidar com o erro (por exemplo, exibir uma mensagem de erro)
     }
-    // Envie os dados de login para a API ou serviço de autenticação
   };
 
 

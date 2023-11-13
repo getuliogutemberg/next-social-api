@@ -4,8 +4,13 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { TbMessageShare } from 'react-icons/tb';
 import { SyncLoader } from 'react-spinners';
+ import { getDoc, query, querySnapshot,collection, getDocs,onSnapshot } from 'firebase/firestore';
+ import {db} from '../../firebase';
+ import { addDoc ,updateDoc,doc} from 'firebase/firestore';
+import { FiLogIn } from 'react-icons/fi';
+import {TfiComments} from 'react-icons/tfi';
+import {AiFillHeart} from 'react-icons/ai';
  
-
   
 
 export default function Verified() {
@@ -14,7 +19,7 @@ export default function Verified() {
 
   const [isEmailVerified, setEmailVerified] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState('carregando...');  // Adicionado estado para controle de autenticação
-  const [verificationCompleted, setVerificationCompleted] = useState(false);
+  const [verificationCompleted, setVerificationCompleted] = useState(true);
 
   
   const [title, setTitle] = useState('');
@@ -25,24 +30,25 @@ export default function Verified() {
   const [posts, setPosts] = useState([]);
 
   const getPosts = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/posts');
-      console.log(response.data.posts);
-      setPosts(response.data.posts);
-    } catch (error) {
-      console.log('Erro ao buscar os posts:', error);
-    }
+    // try {
+    //   const response = await axios.get('http://localhost:5000/api/posts');
+    //   console.log(response.data.posts);
+    //   setPosts(response.data.posts);
+    // } catch (error) {
+    //   console.log('Erro ao buscar os posts:', error);
+    // }
   }
   
 
   const getUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/users');
-      console.log(response.data);
-      setUsersRegistered(response.data);
-    } catch (error) {
-      console.log('Erro ao buscar os usuários:', error);
-    }
+    // try {
+    //   const response = await axios.get('http://localhost:5000/api/users');
+    //   console.log(response.data);
+    //   setUsersRegistered(response.data);
+    // } catch (error) {
+    //   console.log('Erro ao buscar os usuários:', error);
+    // }
+   
   };
 
   // Função para definir a ordem de classificação
@@ -67,30 +73,60 @@ const compareUsers = (userA, userB) => {
   return authorizationComparison;
 };
 
-  useEffect(() => {
-    usersRegistred.map((user) => {
-      if (JSON.parse(localStorage.getItem('user')) && user.email === JSON.parse(localStorage.getItem('user')).email && user.status === 'active') {
-        return setIsLoggedIn(true);
-      }
-      setIsLoggedIn(false)
+  // useEffect(() => {
+  //   usersRegistred.map((user) => {
+  //     console.log('user', user);
+  //     if (JSON.parse(localStorage.getItem('user')) && user.email === JSON.parse(localStorage.getItem('user')).email && user.status === 'active') {
+  //       return setIsLoggedIn(true);
+  //     }
+  //     setIsLoggedIn(false)
 
-      router.push('/login');
+  //     router.push('/login');
       
       
-    });
+  //   });
     
-  },[])
+  // },[])
+
+  // useEffect(() => {
+  //   isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
+  // },[isLoggedIn])
+
+
+  // useEffect(() => {
+  //   getUsers()
+  //   getPosts()
+    
+  // },[isLoggedIn])
+
+  // lendo os usuarios registrados
 
   useEffect(() => {
-    isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
-  },[isLoggedIn])
+    const q = query(collection(db, 'users'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const users = [];
 
+      querySnapshot.forEach((doc) => {
+        users.push({...doc.data(), id: doc.id});
+      })
+
+      setUsersRegistered(users);
+    })
+  }, [])
 
   useEffect(() => {
-    getUsers()
-    getPosts()
-    
-  },[isLoggedIn])
+    const q = query(collection(db, 'posts'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const posts = [];
+
+      querySnapshot.forEach((doc) => {
+        posts.push({...doc.data(), id: doc.id});
+      })
+
+      setPosts(posts);
+    })
+  }, [])
+
  
   const verifyEmail = async () => {
     // Lógica para verificar o email do usuário
@@ -103,7 +139,7 @@ const compareUsers = (userA, userB) => {
       setVerificationCompleted(true);
     } catch (error) {
       console.log(' erro na verificação', error);
-      setEmailVerified(false);
+      setEmailVerified(true);
       setVerificationCompleted(true);
     }
    
@@ -117,34 +153,52 @@ const compareUsers = (userA, userB) => {
     e.preventDefault();
     
     // Verifique se todos os campos obrigatórios estão preenchidos
-    if (!title || !description) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
+    if (title === '' || description === '') {
+      setPostError('Os campos de título e descricão precisam estar preenchidos.');
+      setTimeout(() => {
+        setPostError('');
+      }, 3000);
       return;
     }
-
+    
     const userData = JSON.parse(localStorage.getItem('user'));
+    const {verified,status,deleted_at,updated_at,created_at,...creator } = userData;
+  
 
-// Crie um novo objeto sem a propriedade 'password'
-const { password, ...userWithoutPassword } = userData;
-
-    // Crie um objeto com os dados do novo post
-    const newPost = {
-      title,
-      description,
-      image,
-      createdBy: userWithoutPassword, // Substitua pelo nome do usuário real
-      
-    };
+        // Crie um objeto com os dados do novo post
+        const newPost = {
+          title,
+          description,
+          image,
+          comments: [],
+          likes: [],
+          createdBy: creator, // Substitua pelo nome do usuário real
+          created_at: new Date().toLocaleString(),
+          updated_at: new Date().toLocaleString(),
+          deleted_at: null,
+          permission: 'public',
+          level: 0
+        };
 
     try {
       // Chame a função de callback para enviar o novo post para o servidor
-      const response = await axios.post('http://localhost:5000/api/posts',newPost)
-      console.log(newPost);
+      // const response = await axios.post('http://localhost:5000/api/posts',newPost)
+      // console.log(newPost);
       // Limpe os campos do formulário
+      const response = await addDoc(collection(db, "posts" ), newPost);
+      await updateDoc(doc(db, "posts", response.id), 
+    
+        {
+          id: response.id,
+          created_at: new Date().toLocaleString(),
+          updated_at: new Date().toLocaleString(),
+          deleted_at: null,
+        }
+      );
     setTitle('');
     setDescription('');
     setImage('');
-    return console.log(response.data);
+    return console.log('post criado com sucesso',response.id);
     } catch (error) {
       console.log('Erro ao criar o post:', error.response.data.message);
     }
@@ -165,31 +219,31 @@ const { password, ...userWithoutPassword } = userData;
     setIsLoggedIn(localStorage.getItem('user') !== null ? true : false)
   },[])
 
-  if (isLoggedIn === true && !isEmailVerified) {
-    return (
+  // if (isLoggedIn === true && !isEmailVerified) {
+  //   return (
 
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-gray-800">
+  //     <div className="min-h-screen flex items-center justify-center bg-slate-900 text-gray-800">
          
-        <div className="max-w-md p-4 bg-white rounded-lg shadow-md text-center ">
-          <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center"><TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Seu email ainda não foi verificado.</h2>
-          <p>Por favor, verifique seu email para acessar a seção aberta.</p>
-        </div>
-      </div>
-    );
-  }
+  //       <div className="max-w-md p-4 bg-white rounded-lg shadow-md text-center ">
+  //         <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center"><TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Seu email ainda não foi verificado.</h2>
+  //         <p>Por favor, verifique seu email para acessar a seção aberta.</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
-  if(isLoggedIn === false && !isEmailVerified) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-gray-800">
-        <div className="max-w-md p-4 bg-white rounded-lg shadow-md text-center ">
-          <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center"><TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Usuario Nao Logado </h2>
+  // if(isLoggedIn === false && !isEmailVerified) {
+  //   return (
+  //     <div className="min-h-screen flex items-center justify-center bg-slate-900 text-gray-800">
+  //       <div className="max-w-md p-4 bg-white rounded-lg shadow-md text-center ">
+  //         <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center"><TbMessageShare className='text-[40px] text-purple-800 mx-4'/>Usuario Nao Logado </h2>
           
-          <p>Voce nao esta Logado.</p><SyncLoader color="purple" className="mt-4"/>
-        </div>
+  //         <p>Voce nao esta Logado.</p><SyncLoader color="purple" className="mt-4"/>
+  //       </div>
         
-      </div>
-    );
-  }
+  //     </div>
+  //   );
+  // }
 
   
 
@@ -204,38 +258,44 @@ const { password, ...userWithoutPassword } = userData;
 
       
       {posts.map((post)=>{
+        // console.log(post);
         return (
-          <div className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 max-w-[500px]" onClick={() => router.push(`/openview/${post.title}`)}>
+          <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 w-[95%] max-h-[600px]" onClick={() => router.push(`/openview/${post.id}`)}>
+                <span className="text-gray-800 text-center text-sm font-extralight  mx-4 mt-0">{new Date(post.created_at).toLocaleDateString()} - {new Date(post.created_at).toLocaleTimeString()}</span>
             <div className='flex flex-row justify-between'>
-                <h2 className='text-6xl font-extrabold  text-left  '>{post.title}</h2>
             <div className='flex flex-col'> 
-              <div className="flex justify-end items-center pt-0 relative top-4 right-4">
-                <div>
-                  <p className="font-bold text-xl">{post.createdBy.name}</p>
-                
-                </div>
+              <div className="flex justify-center items-center ml-4">
                 <img
                   src={post.createdBy.imageURL}
                   alt={post.createdBy.name}
-                  className="w-10 h-10 rounded-full mx-2"
+                  className="w-16 h-16 rounded-full"
                 />
+                <div className='flex flex-col ml-4'>
+                <h2 className='text-3xl font-extrabold  text-left capitalize '>{post.title}</h2>
+                  <p className=" text-sm text-left">{post.createdBy.name}</p>
+                
+                </div>
                 
               </div>
-              <span className="text-gray-800 text-end text-sm font-extralight  mx-4 mt-4">{new Date(post.updatedAt).toLocaleString()}</span>
+              
               </div>
+                {/* <h2 className='text-3xl font-extrabold  text-left capitalize '>{post.title}</h2> */}
+          
             </div>
+            <div className='flex flex-row gap-4 overflow-auto'>
             <img
                 src={post.image}
                 alt={" "}
-                className="rounded object-cover  w-[100%] bottom-20 opacity-40 z-10"
+                className="rounded object-cover  w-[40%] h-[50%] "
               />
-              <span className="text-gray-800 text-start text-[30px] mx-4 bottom-10 z-10">{post.description}</span>
+            <span className="text-gray-800 text-start text-md font-extralight  max-w-[50%] h-[50%] ">{post.description}</span>
+            </div>
+            <div className='flex flex-row justify-end gap-4 mx-4'> 
 
-              <div className='flex flex-row justify-between'> 
-
-              {post.comments!==undefined && post.comments.length > 0 && <span>comentarios: {post.comments.length}</span>}
-              {post.likes!==undefined && post.likes.length > 0 && <span>likes: {post.likes.length}</span>}
-              </div>
+            <p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
+            <p  className="text-red-400 text-bold hover:scale-150 flex gap-4"><AiFillHeart  className='scale-150'/><p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
+            
+            </div>
             
 
           </div>
@@ -252,7 +312,7 @@ const { password, ...userWithoutPassword } = userData;
     {/* <p>aqui é a lista de usuarios</p> */}
     {usersRegistred.sort(compareUsers).map((user) => (
 
-<div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={user.status === 'active' ? () => router.push(`/openview/${user.email}`) : null} >
+<div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={user.status === 'active' ? () => router.push(`/openview/${user.id}`) : null} >
   <div className="w-2/3  text-end">
     <h2 className="text-xl font-bold mb-0">{user.name}</h2>
     <p className="text-gray-600 mb-0 text-sm">{user.email}</p>

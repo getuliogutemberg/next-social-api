@@ -13,6 +13,8 @@ import {TbLockShare,TbMessageShare} from 'react-icons/tb';
 import { usePathname } from 'next/navigation';
 import axios from '../axios';
 import { useRouter } from 'next/navigation';
+import { collection,addDoc,setDoc,doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -24,33 +26,48 @@ export default function RootLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname()
   
-
- 
-
-  
-
-  
-  
   const [isNavOpen, setIsNavOpen] = useState(false);
+
+  
 
   const toggleNav = () => {
     setIsNavOpen(!isNavOpen);
   };
 
   const logout = async () => {
-    try {
-      const response = await axios.post('http://localhost:5000/api/logout', {email:JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user')).email : ''});
-      console.log(response.data);
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      router.push('/');
+
+    // try {
+    //   const response = await axios.post('http://localhost:5000/api/logout', {email:JSON.parse(localStorage.getItem('user')) ? JSON.parse(localStorage.getItem('user')).email : ''});
+    //   console.log(response.data);
+    //   localStorage.removeItem('authToken');
+    //   localStorage.removeItem('user');
+    //   router.push('/');
+    // }
+    // catch (error) {
+    //   console.log("erro ao deslogar",error.response.data.message);
+    // }
+
+    // update users status on firebase
+    
+    localStorage.getItem('usuarioRef') !== null && await updateDoc(doc(db, "users", localStorage.getItem('usuarioRef')), 
+    
+    {
+      
+      status: 'inactive',
+      updated_at: new Date(),
     }
-    catch (error) {
-      console.log("erro ao deslogar",error.response.data.message);
-    }
+
+    );
+
+    localStorage.removeItem('user')
+    localStorage.removeItem('usuarioRef')
+
+    
+}
+
       
     
-  }
+  
 
   
 

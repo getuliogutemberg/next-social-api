@@ -5,17 +5,19 @@ import { useEffect, useState } from 'react';
 import { TbMessageShare } from 'react-icons/tb';
 import { SyncLoader } from 'react-spinners';
 import { usePathname } from 'next/navigation';
- 
+import { getDoc, query, querySnapshot,collection, getDocs,onSnapshot } from 'firebase/firestore';
+import {db} from '../../../firebase';
+import { addDoc ,updateDoc,doc} from 'firebase/firestore';
 
   
 
 export default function Postview({ params }) {
 
   const router = useRouter();
-  const pathname = usePathname()
-  const [isEmailVerified, setEmailVerified] = useState(false);
+  
+  const [isEmailVerified, setEmailVerified] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState('carregando...');  // Adicionado estado para controle de autenticação
-  const [verificationCompleted, setVerificationCompleted] = useState(false);
+  const [verificationCompleted, setVerificationCompleted] = useState(true);
 
   
   const [title, setTitle] = useState('');
@@ -26,15 +28,28 @@ export default function Postview({ params }) {
   const [posts, setPosts] = useState([]);
 
   const getPosts = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/posts');
-      console.log(response.data.posts);
-      setPosts(response.data.posts);
-    } catch (error) {
-      console.log('Erro ao buscar os posts:', error);
-    }
+    // try {
+    //   const response = await axios.get('http://localhost:5000/api/posts');
+    //   console.log(response.data.posts);
+    //   setPosts(response.data.posts);
+    // } catch (error) {
+    //   console.log('Erro ao buscar os posts:', error);
+    // }
+    
   }
   
+  useEffect(() => {
+    const q = query(collection(db, 'posts'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const posts = [];
+
+      querySnapshot.forEach((doc) => {
+        posts.push({...doc.data(), id: doc.id});
+      })
+
+      setPosts(posts);
+    })
+  }, [])
 
   const getUsers = async () => {
     try {
@@ -68,50 +83,50 @@ const compareUsers = (userA, userB) => {
   return authorizationComparison;
 };
 
-  useEffect(() => {
-    usersRegistred.map((user) => {
-      if (JSON.parse(localStorage.getItem('user')) && user.email === JSON.parse(localStorage.getItem('user')).email && user.status === 'active') {
-        return setIsLoggedIn(true);
-      }
-      setIsLoggedIn(false)
+  // useEffect(() => {
+  //   usersRegistred.map((user) => {
+  //     if (JSON.parse(localStorage.getItem('user')) && user.email === JSON.parse(localStorage.getItem('user')).email && user.status === 'active') {
+  //       return setIsLoggedIn(true);
+  //     }
+  //     setIsLoggedIn(false)
 
-      router.push('/login');
+  //     router.push('/login');
       
       
-    });
+  //   });
     
-  },[])
+  // },[])
 
-  useEffect(() => {
-    isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
-  },[isLoggedIn])
+  // useEffect(() => {
+  //   isLoggedIn === false && setTimeout(() => router.push('/login'),5000);
+  // },[isLoggedIn])
 
 
-  useEffect(() => {
-    getUsers()
-    getPosts()
+  // useEffect(() => {
+  //   getUsers()
+  //   getPosts()
     
-  },[isLoggedIn])
+  // },[isLoggedIn])
  
-  const verifyEmail = async () => {
-    // Lógica para verificar o email do usuário
-    // Atualize o estado 'isEmailVerified' com o resultado da verificação
-    try {
-      const response = await axios.get(`http://localhost:5000/api/verify-email/${localStorage.getItem('authToken')}`);
-      console.log( 'resposta de verificação',response.data);
-      setEmailVerified(response.data.success);
+  // const verifyEmail = async () => {
+  //   // Lógica para verificar o email do usuário
+  //   // Atualize o estado 'isEmailVerified' com o resultado da verificação
+  //   try {
+  //     const response = await axios.get(`http://localhost:5000/api/verify-email/${localStorage.getItem('authToken')}`);
+  //     console.log( 'resposta de verificação',response.data);
+  //     setEmailVerified(response.data.success);
 
-      setVerificationCompleted(true);
-    } catch (error) {
-      console.log(' erro na verificação', error.response.data.message);
-      setEmailVerified(false);
-      setVerificationCompleted(true);
-    }
+  //     setVerificationCompleted(true);
+  //   } catch (error) {
+  //     console.log(' erro na verificação', error.response.data.message);
+  //     setEmailVerified(false);
+  //     setVerificationCompleted(true);
+  //   }
    
     
    
 
-  };
+  // };
 
 
   const handleSubmit = async (e) => {
@@ -156,15 +171,15 @@ const { password, ...userWithoutPassword } = userData;
   };
 
 
-  useEffect(() => {
-    if (!verificationCompleted) {
-    verifyEmail();
-    }
-  },[verificationCompleted])
+  // useEffect(() => {
+  //   if (!verificationCompleted) {
+  //   verifyEmail();
+  //   }
+  // },[verificationCompleted])
  
-  useEffect(() => {
-    setIsLoggedIn(localStorage.getItem('user') !== null ? true : false)
-  },[])
+  // useEffect(() => {
+  //   setIsLoggedIn(localStorage.getItem('user') !== null ? true : false)
+  // },[])
 
   if (isLoggedIn === true && !isEmailVerified) {
     return (
@@ -204,7 +219,8 @@ const { password, ...userWithoutPassword } = userData;
       <div className=' flex flex-col items-start'>
 
       
-      {posts.filter((post) => post.title === params.post).map((post)=>{
+      {posts.filter((post) => post.id === params.post).map((post)=>{
+        console.log(post)
         return (
           <div key={post._id} className='flex flex-row justify-between'>
           <div className="bg-gray-100 rounded-lg  shadow-md p-4 flex flex-col justify-between cursor-pointer w-[full] max-h-[710px] mb-4" onClick={() => router.push(`/openview/${post.title}`)}>
@@ -251,9 +267,9 @@ const { password, ...userWithoutPassword } = userData;
           </div>
 
           <div className="flex flex-col gap-4 mx-4">
-          {posts.filter((post) => post.title !== params.post).map((post)=>{
+          {posts.filter((post) => post.id !== params.post).map((post)=>{
         return (
-          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  p-4 flex flex-col justify-center items-center cursor-pointer max-w-64 max-h-64" onClick={() => router.push(`/openview/${post.title}`)}>
+          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  p-4 flex flex-col justify-center items-center cursor-pointer max-w-64 max-h-64" onClick={() => router.push(`/openview/${post.id}`)}>
             <div className="flex">
                 
 

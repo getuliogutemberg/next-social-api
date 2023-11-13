@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { FiUser, FiHome,FiUserPlus } from 'react-icons/fi';
 import axios from '../../axios';
 import { useRouter } from 'next/navigation';
-
+import { collection,addDoc ,updateDoc,doc} from 'firebase/firestore';
+import { db } from '../../firebase';
 export default function Register() {
 
   const router = useRouter();
@@ -13,6 +14,8 @@ export default function Register() {
     name: '',
     email: '',
     password: '',
+    level: 0,
+    admin: false
   });
 
   const [registrationStatus, setRegistrationStatus] = useState({
@@ -20,9 +23,9 @@ export default function Register() {
     error: null,
   });
 
-  useEffect(() => {
-    console.log(router)
-  },[])
+  // useEffect(() => {
+  //   console.log(router)
+  // },[])
 
 
 
@@ -31,37 +34,94 @@ export default function Register() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log('Dados do formulário:', formData);
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   console.log('Dados do formulário:', formData);
    
-     try { 
-      const response = await axios.post('http://localhost:5000/api/register', formData);  // Faz a solicitação ao backend
-      console.log('Resposta do servidor:', response.data.message);
-      console.log('Resposta do servidor:', response.data.user);
-      // Lógica adicional de redirecionamento ou feedback ao usuário
-      localStorage.setItem('authToken', response.data.authToken);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
-      // Registro bem-sucedido
-      setRegistrationStatus({ success: true, error: null });
+  //    try { 
+  //     const response = await axios.post('http://localhost:5000/api/register', formData);  // Faz a solicitação ao backend
+  //     console.log('Resposta do servidor:', response.data.message);
+  //     console.log('Resposta do servidor:', response.data.user);
+  //     // Lógica adicional de redirecionamento ou feedback ao usuário
+  //     localStorage.setItem('authToken', response.data.authToken);
+  //     localStorage.setItem('user', JSON.stringify(response.data.user));
+  //     // Registro bem-sucedido
+  //     setRegistrationStatus({ success: true, error: null });
       
-      // Redirecionar para a página desejada (por exemplo, a página de login)
-      router.push('/openview');
+  //     // Redirecionar para a página desejada (por exemplo, a página de login)
+  //     router.push('/openview');
 
 
-    } catch (error) {
-      console.log('Erro na solicitação:', error.response.data.message);
-      console.log('Usuario:', error.response.data.user);
+  //   } catch (error) {
+  //     console.log('Erro na solicitação:', error.response.data.message);
+  //     console.log('Usuario:', error.response.data.user);
 
-       // Registro falhou
-       setRegistrationStatus({ success: false, error: 'Erro ao registrar.' + error.response.data.message });
+  //      // Registro falhou
+  //      setRegistrationStatus({ success: false, error: 'Erro ao registrar.' + error.response.data.message });
+
+  //      setTimeout(() => {
+  //       setRegistrationStatus({ success: false, error: null });
+  //      }, 5000);
+  //   }
+    
+  // };
+
+  // add new user to firebase
+  const handleSubmit = async (e) => {
+    
+    e.preventDefault();
+
+    if (formData.name !== '' && formData.email !== '' && formData.password !== '') {
+      const user = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        level: 0,
+        admin: false,
+        verified: false,
+        created_at: new Date().toLocaleDateString(),
+        updated_at: new Date().toLocaleDateString(),
+        deleted_at: null,
+        status: 'active',
+        imageURL: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+      };
+      try {
+        const response = await addDoc(collection(db, "users" ), user);
+        
+        await updateDoc(doc(db, "users", response.id), 
+    
+        {
+          id: response.id,
+          created_at: new Date().toLocaleDateString(),
+          updated_at: new Date().toLocaleDateString(),
+          deleted_at: null,
+        }
+
+        );
+        localStorage.setItem("usuarioRef",response.id);
+        const userWithInfo = {
+          level: 0,
+          admin: false,
+          verified: false,
+          name: formData.name,
+          email: formData.email,
+          status: 'active',
+          imageURL: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'
+        }
+        localStorage.setItem('user', JSON.stringify( userWithInfo ));
+        router.push('/openview');
+      } catch (error) {
+        console.error("Error adding document: ", error);
+        setRegistrationStatus({ success: false, error: 'Erro ao registrar.' + error});
 
        setTimeout(() => {
         setRegistrationStatus({ success: false, error: null });
        }, 5000);
+      }
     }
-    
-  };
+  }
+
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-around bg-slate-900">
