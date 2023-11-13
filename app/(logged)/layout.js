@@ -49,7 +49,7 @@ export default function RootLayout({ children }) {
 
     // update users status on firebase
     
-    localStorage.getItem('usuarioRef') !== null && await updateDoc(doc(db, "users", localStorage.getItem('usuarioRef')), 
+    localStorage.getItem('user') !== null && await updateDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id), 
     
     {
       
@@ -60,7 +60,7 @@ export default function RootLayout({ children }) {
     );
 
     localStorage.removeItem('user')
-    localStorage.removeItem('usuarioRef')
+   
 
     
 }
@@ -133,7 +133,7 @@ export default function RootLayout({ children }) {
 
           <div className=' mt-[5vh] '>
               
-              <Link href="/" onClick={() => logout()} className={`text-white my-0 hover:text-purple-700 flex gap-2  transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ' : 'justify-left '} h-10 ml-3 flex items-center `}>
+              <Link href="/" onClick={logout} className={`text-white my-0 hover:text-purple-700 flex gap-2  transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ' : 'justify-left '} h-10 ml-3 flex items-center `}>
               <FiLogOut className={`transition-all ease-in-out duration-2000  w-10 h-10`}/>{isNavOpen && <span className='text-white transition-all ease-in-out duration-2000 font-extrabold text-xl hover:text-purple-700 '>Sair</span>}
               </Link>
             

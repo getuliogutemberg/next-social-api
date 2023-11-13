@@ -6,8 +6,7 @@ export default function Admin() {
   const [isAdmin, setIsAdmin] = useState(true);
 
   useEffect(() => {
-    // Lógica para verificar se o usuário logado é um administrador
-    // Atualize o estado 'isAdmin' com o resultado da verificação.
+    
   }, []);
 
   if (!isAdmin) {

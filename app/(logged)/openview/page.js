@@ -31,6 +31,11 @@ export default function Verified() {
   const [usersRegistred, setUsersRegistered] = useState([]);
   const [posts, setPosts] = useState([]);
 
+  useEffect(() => {
+    
+    localStorage.getItem('user') === null && router.push('/');
+    // localStorage.getItem('user') !== null && JSON.parse(localStorage.getItem('user')).status !== 'active' && router.back();
+  },[])
   const getPosts = async () => {
     // try {
     //   const response = await axios.get('http://localhost:5000/api/posts');
