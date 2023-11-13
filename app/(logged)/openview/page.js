@@ -10,6 +10,8 @@ import { SyncLoader } from 'react-spinners';
 import { FiLogIn } from 'react-icons/fi';
 import {TfiComments} from 'react-icons/tfi';
 import {AiFillHeart} from 'react-icons/ai';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
  
   
 
@@ -169,12 +171,12 @@ const compareUsers = (userA, userB) => {
         const newPost = {
           title,
           description,
-          image,
+          image: image!==''? image :'https://img.freepik.com/free-photo/abstract-textured-backgound_1258-30588.jpg',
           comments: [],
           likes: [],
           createdBy: creator, // Substitua pelo nome do usuário real
-          created_at: new Date().toLocaleString(),
-          updated_at: new Date().toLocaleString(),
+          created_at: new Date(),
+          updated_at: new Date(),
           deleted_at: null,
           permission: 'public',
           level: 0
@@ -190,9 +192,8 @@ const compareUsers = (userA, userB) => {
     
         {
           id: response.id,
-          created_at: new Date().toLocaleString(),
-          updated_at: new Date().toLocaleString(),
-          deleted_at: null,
+          updated_at: new Date(),
+         
         }
       );
     setTitle('');
@@ -245,23 +246,31 @@ const compareUsers = (userA, userB) => {
   //   );
   // }
 
-  
+
 
   return (
     <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-[100vh] p-4 ">
     
     <div className="col-span-4 row-span-4   rounded-lg text-center overflow-auto">
-      <div className="text-2xl font-extrabold mb-4 flex flex-1 items-center justify-center">
-        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">Open List</h2></div>
+      <div className="text-2xl  mb-4 flex flex-1 items-center justify-start">
+        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">Posts públicos</h2></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
       <div className=' flex flex-col gap-4 items-center'>
 
       
-      {posts.map((post)=>{
-        // console.log(post);
+      {posts.length > 0 && posts.sort((a, b) => {
+  const timeA = a.created_at.seconds * 1000 + a.created_at.nanoseconds / 1e6;
+  const timeB = b.created_at.seconds * 1000 + b.created_at.nanoseconds / 1e6;
+
+  // Ajuste a ordem da subtração se desejar ordenar de outra forma
+  return timeB - timeA;
+}).map((post)=>{
+        // console.log(posts);
         return (
           <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 w-[95%] max-h-[600px]" onClick={() => router.push(`/openview/${post.id}`)}>
-                <span className="text-gray-800 text-center text-sm font-extralight  mx-4 mt-0">{new Date(post.created_at).toLocaleDateString()} - {new Date(post.created_at).toLocaleTimeString()}</span>
+                {post.created_at !== null && <span className="text-gray-800 text-center text-sm font-extralight  mx-4 mt-0">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm (zzzz)", {
+                locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
+              })}</span>}
             <div className='flex flex-row justify-between'>
             <div className='flex flex-col'> 
               <div className="flex justify-center items-center ml-4">
@@ -300,7 +309,7 @@ const compareUsers = (userA, userB) => {
 
           </div>
         )
-      }).reverse()}
+      })}
 
       </div>
     </div>
@@ -350,7 +359,7 @@ const compareUsers = (userA, userB) => {
               type="text"
               id="image"
               value={image}
-              onChange={(e) => setImage(e.target.value)}
+              onChange={(e) => setImage(e.target.value )}
               className="w-[30%]  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             />
           </div>

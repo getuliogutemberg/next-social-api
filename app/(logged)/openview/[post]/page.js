@@ -8,8 +8,10 @@ import { usePathname } from 'next/navigation';
 import { getDoc, query, querySnapshot,collection, getDocs,onSnapshot } from 'firebase/firestore';
 import {db} from '../../../firebase';
 import { addDoc ,updateDoc,doc} from 'firebase/firestore';
-
-  
+import {TfiComments} from 'react-icons/tfi';
+import {AiFillHeart} from 'react-icons/ai';
+  import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 export default function Postview({ params }) {
 
@@ -48,8 +50,31 @@ export default function Postview({ params }) {
       })
 
       setPosts(posts);
+
+    })
+    
+  }, [])
+
+  useEffect(() => {
+    posts.filter((post) => post.id === params.post).map((post) => {
+      setPost(post);
+    }
+    )
+  }, [posts]);
+
+  useEffect(() => {
+    const q = query(collection(db, 'users'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const users = [];
+
+      querySnapshot.forEach((doc) => {
+        users.push({...doc.data(), id: doc.id});
+      })
+
+      setUsersRegistered(users);
     })
   }, [])
+
 
   const getUsers = async () => {
     try {
@@ -207,47 +232,41 @@ const { password, ...userWithoutPassword } = userData;
     );
   }
 
-  
+  const [post, setPost] = useState({
+    title: '',
+    description: '',
+    image: '',
+    permission: '',
+    level: 0
+  });
 
   return (
     <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-[100vh] p-4 ">
     
-    <div className="col-span-4 row-span-5   rounded-lg text-center overflow-auto">
-      <div className="text-2xl font-extrabold mb-4 flex flex-1 items-center justify-center">
-        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">Post: {params.post}</h2></div>
+    <div className="col-span-4 row-span-5   rounded-lg text-center overflow-auto max-h-[100vh]">
+      
+      <div className="text-2xl  mb-4 flex flex-1 items-center justify-start">
+        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">   {post.level ? <span className='text-red-400'>Privado</span> : <span className='text-white'>Público</span>}</h2></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
-      <div className=' flex flex-col items-start'>
+      <div className=' flex flex-col items-start '>
 
       
       {posts.filter((post) => post.id === params.post).map((post)=>{
-        console.log(post)
+        // console.log(post)
+        
         return (
-          <div key={post._id} className='flex flex-row justify-between'>
-          <div className="bg-gray-100 rounded-lg  shadow-md p-4 flex flex-col justify-between cursor-pointer w-[full] max-h-[710px] mb-4" onClick={() => router.push(`/openview/${post.title}`)}>
+          <div key={post._id} className={`flex flex-row justify-between h-[77.6vh] gap-4 w-[100%] ${posts.filter((post) => post.id !== params.post) === undefined ? 'mx-[10%]' : ' '}`}>
+          <div className="bg-gray-100 rounded-lg  shadow-md p-4 flex flex-col justify-between  w-[100%] max-h-[710px] mb-4" >
             <div className='flex flex-row justify-between'>
-                <h2 className='text-6xl font-extrabold  text-left  '>{post.title}</h2>
-            <div className='flex flex-col'> 
-              <div className="flex justify-end items-center pt-0 relative top-4 right-4">
-                <div>
-                  <p className="font-bold text-xl">{post.createdBy.name}</p>
-                
-                </div>
-                <img
-                  src={post.createdBy.imageURL}
-                  alt={post.createdBy.name}
-                  className="w-10 h-10 rounded-full mx-2"
-                />
-                
-              </div>
-              <span className="text-gray-800 text-end text-sm font-extralight  mx-4 mt-4">{new Date(post.updatedAt).toLocaleString()}</span>
-              </div>
+                <h2 className='text-3xl font-extrabold  text-left  capitalize'>{post.title}</h2>
+            
             </div>
             <img
                 src={post.image}
                 alt={" "}
-                className="rounded object-cover  w-[100%] h-[100%] bottom-20 opacity-40 z-10"
+                className="rounded object-contain  w-[100%] h-[60%]  "
               />
-              <span className="text-gray-800 text-start text-[30px] mx-4 bottom-10 z-10">{post.description}</span>
+              <span className="text-gray-800 text-start text-md font-light">{post.description}</span>
               {post.comments !== undefined && post.comments.map((comment) => {
                 return (
                   <div>
@@ -255,45 +274,62 @@ const { password, ...userWithoutPassword } = userData;
                   </div>
                 )
               })}
-              <div className='flex flex-row justify-between'> 
-
-              {post.comments!==undefined && post.comments.length > 0 && <span> comentatrios: {post.comments.length}</span>}
-              {post.likes!==undefined && post.likes.length > 0 && <span>likes: {post.likes.length}</span>}
+              <span className="text-gray-800 text-center text-sm font-extralight">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm (zzzz)", {
+                locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
+              })}</span>
+              <div className='flex flex-col'> 
+              <div className="flex justify-end items-center gap-4 ">
+                <div>
+                  <p className="font-extralight text-md">{post.createdBy.name}</p>
+                
+                </div>
+                <img
+                  src={post.createdBy.imageURL}
+                  alt={post.createdBy.name}
+                  className="w-10 h-10 rounded-full  scale-[-1] rotate-180
+                  "
+                />
+                
+              </div>
               
+              </div>
+              <div className='flex flex-row justify-right gap-4'> 
+              
+              <span> comentatrios: {post.comments.length}</span>
+             
+              <span>likes: {post.likes.length}</span>
+              {post.comments.map(()=>{
+                return (
+                  <div>
+                    <p className="text-gray-800 text-start text-[20px] mx-4 bottom-10 z-10">{comment.content}</p>
+                  </div>
+                )
+              })}
 
               </div>
             
 
           </div>
 
-          <div className="flex flex-col gap-4 mx-4">
+          {posts.filter((post) => post.id !== params.post) && <div className="flex flex-col gap-4   overflow-auto overflow-x-hidden rounded min-w-[300px] mb-4">
           {posts.filter((post) => post.id !== params.post).map((post)=>{
         return (
-          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  p-4 flex flex-col justify-center items-center cursor-pointer max-w-64 max-h-64" onClick={() => router.push(`/openview/${post.id}`)}>
-            <div className="flex">
-                
-
-              
-                
-                
-              </div>
-              <h2 className='text-xl font-extrabold  text-left  '></h2>
+          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  flex flex-col justify-center items-center cursor-pointer w-[300px] min-h-[300px]" onClick={() => router.push(`/openview/${post.id}`)}>
+          
+             
             <img
                 src={post.image}
                 alt={" "}
-                className="rounded object-cover opacity-40  w-64 h-64 hover:transition-all hover:duration-300 z-20"
+                className="rounded object-cover  w-[300px] h-[270px]  p-4   hover:transition-all hover:duration-300 "
               />
              
-            
-             <div>
-                  <p className="font-bold">{post.createdBy.name} - {post.title}</p>
-                  <span className="text-gray-800 text-end text-xs font-extralight  mx-4 mt-3">{new Date(post.updatedAt).toLocaleString()}</span>
-                </div>
+        
              
-      
-                {post.comments!==undefined && post.comments.length > 0 && <span> comentatrios: {post.comments.length}</span>}
-                {post.likes!==undefined && post.likes.length > 0 && <span>likes: {post.likes.length}</span>}
-      
+      <div className='flex flex-row gap-4'> 
+             <p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
+            <p  className="text-red-400 text-bold hover:scale-150 flex gap-4"><AiFillHeart  className='scale-150'/><p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
+            </div>
+    
       
 
             
@@ -303,7 +339,7 @@ const { password, ...userWithoutPassword } = userData;
           </div>
         )
       }).reverse()}
-            </div>
+            </div>}
             </div>
         )
       }).reverse()}
@@ -315,7 +351,7 @@ const { password, ...userWithoutPassword } = userData;
       </div>
 
 
-<div className="bg-white rounded-lg shadow-md text-center p-4 overflow-auto ">
+      <div className="bg-white rounded-lg shadow-md text-center  overflow-auto  ">
         {/* <h2 className="text-2xl font-extrabold mb-4">Novo Post</h2> */}
         <form onSubmit={handleSubmit} className="flex gap-4">
           <div className="flex-1 flex-row gap-4 flex ">
@@ -324,7 +360,7 @@ const { password, ...userWithoutPassword } = userData;
             <img
               src={JSON.parse(localStorage.getItem('user')).imageURL}
               alt="Imagem"
-              className="w-32 h-32 rounded-full object-cover"
+              className="w-32 h-32  object-cover scale-[-1] rotate-180"
             />
             {/* <h3 className="text-2xl font-extrabold  flex flex-1 items-center justify-start">{JSON.parse(localStorage.getItem('user')).name}</h3> */}
             
@@ -360,16 +396,16 @@ const { password, ...userWithoutPassword } = userData;
     {/* <p>aqui é a lista de usuarios</p> */}
     {usersRegistred.sort(compareUsers).map((user) => (
 
-<div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={user.status === 'active' ? () => router.push(`/openview/${user.email}`) : null} >
-  <div className="w-2/3  text-end">
-    <h2 className="text-xl font-bold mb-0">{user.name}</h2>
-    <p className="text-gray-600 mb-0 text-sm">{user.email}</p>
-    <p className={`text-xs font-semibold ${user.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
-      {user.status === 'active' ? 'Logado' : 'Desconectado'}
-    </p>
-  </div>
-  <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
-</div>
+      <div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={user.status === 'active' ? () => router.push(`/openview/${user.email}`) : null} >
+        <div className="w-2/3  text-end">
+          <h2 className="text-xl font-bold mb-0">{user.name}</h2>
+          <p className="text-gray-600 mb-0 text-sm">{user.email}</p>
+          <p className={`text-xs font-semibold ${user.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+            {user.status === 'active' ? 'Logado' : 'Desconectado'}
+          </p>
+        </div>
+        <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
+      </div>
 
     ))}
 
