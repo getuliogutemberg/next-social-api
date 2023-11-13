@@ -95,13 +95,13 @@ export default function RootLayout({ children }) {
             <div className='border-b-2 w-full  border-purple-500'/>
               <li className='my-2'>
                 <Link href="/openview" className={`text-white hover:text-purple-700 flex gap-2 my-0 transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ml-3' : 'justify-left pl-3 '} h-10 flex items-center  `}>
-                <TbMessageShare className={`transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'text-purple-700 scale-125'  } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Área Aberta</h3>}
+                <TbMessageShare className={`transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'text-purple-700 scale-125'  } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Posts públicos</h3>}
                 </Link>
               </li>
               <div className='border-b-2 w-full border-purple-500'/>
               <li className='my-2'>
                 <Link href="/secretview" className={`text-white hover:text-purple-700 flex gap-2 my-0 transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ml-3' : 'justify-left pl-3 '} h-10 flex items-center `}>
-                <TbLockShare className={`transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'text-purple-700 scale-125' } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Área Restrita</h3>}
+                <TbLockShare className={`transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'text-purple-700 scale-125' } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Posts Secretos</h3>}
                 </Link>
               </li>
               
@@ -109,7 +109,7 @@ export default function RootLayout({ children }) {
               <div className='border-b-2 w-full border-purple-500'/>
               <li className='my-2'>
                 <Link href="/profile" className={`text-white hover:text-purple-700 flex gap-2 my-0   ${!isNavOpen ? 'justify-center' : 'justify-left ml-3'} h-10 flex items-center ` }>
-                <BiUser className={`transition-all ease-in-out duration-2000 ${pathname === '/profile' && 'text-purple-700 scale-125'} w-10 h-10`}/>{isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/profile' && 'm-auto text-purple-700 ' } transition-all ease-in-out duration-2000 hover:text-purple-700`}>Editar Perfil de Usuário</h3>} 
+                <BiUser className={`transition-all ease-in-out duration-2000 ${pathname === '/profile' && 'text-purple-700 scale-125'} w-10 h-10`}/>{isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/profile' && 'm-auto text-purple-700 ' } transition-all ease-in-out duration-2000 hover:text-purple-700`}>Editar Perfil</h3>} 
                 </Link>
               </li>
               <div className='border-b-2 w-full border-purple-500'/>
@@ -122,7 +122,7 @@ export default function RootLayout({ children }) {
               
               <li className='my-2'>
                 <Link href="/admin"  className={`text-white hover:text-purple-700 flex gap-2 my-0 transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ml-3' : 'justify-left pl-3'} h-10 flex items-center `}>
-                <FiSettings className={`transition-all ease-in-out duration-2000 ${pathname === '/admin' && 'text-purple-700 scale-125'} w-10 h-10 `}/>{isNavOpen && <span className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/admin' && 'm-auto text-purple-700' } transition-all ease-in-out duration-2000 hover:text-purple-700 `}>Configuração </span>}
+                <FiSettings className={`transition-all ease-in-out duration-2000 ${pathname === '/admin' && 'text-purple-700 scale-125'} w-10 h-10 `}/>{isNavOpen && <span className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/admin' && 'm-auto text-purple-700' } transition-all ease-in-out duration-2000 hover:text-purple-700 `}>Configurações </span>}
                 </Link>
               </li>
               <div className='border-b-2 w-full border-purple-500'/>
@@ -134,7 +134,7 @@ export default function RootLayout({ children }) {
           <div className=' mt-[5vh] '>
               
               <Link href="/" onClick={() => logout()} className={`text-white my-0 hover:text-purple-700 flex gap-2  transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ' : 'justify-left '} h-10 ml-3 flex items-center `}>
-              <FiLogOut className={`transition-all ease-in-out duration-2000  w-10 h-10`}/>{isNavOpen && <span className='text-white transition-all ease-in-out duration-2000 font-extrabold text-xl hover:text-purple-700 '>Logout</span>}
+              <FiLogOut className={`transition-all ease-in-out duration-2000  w-10 h-10`}/>{isNavOpen && <span className='text-white transition-all ease-in-out duration-2000 font-extrabold text-xl hover:text-purple-700 '>Sair</span>}
               </Link>
             
           </div>

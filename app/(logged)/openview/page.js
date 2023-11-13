@@ -54,26 +54,39 @@ export default function Verified() {
   };
 
   // Função para definir a ordem de classificação
-const compareUsers = (userA, userB) => {
-  // Priorize usuários logados (active) primeiro
-  if (userA.status === 'active' && userB.status !== 'active') {
-    return -1;
-  } else if (userA.status !== 'active' && userB.status === 'active') {
-    return 1;
-  }
-
-  // Se ambos estiverem no mesmo estado, ordene por ordem alfabética do nome
-  const nameComparison = userA.name.localeCompare(userB.name);
-
-  if (nameComparison !== 0) {
-    return nameComparison;
-  }
-
-  // Se ambos estiverem no mesmo estado e tiverem o mesmo nome, ordene por nível de autorização (status)
-  const authorizationComparison = userB.authorizationLevel - userA.authorizationLevel;
-
-  return authorizationComparison;
-};
+  const compareUsers = (userA, userB) => {
+    const loggedUserId = JSON.parse(localStorage.getItem('user')).id;
+  
+    // Verifica se o usuário logado é igual a userA ou userB
+    const isUserALoggedIn = userA.id === loggedUserId;
+    const isUserBLoggedIn = userB.id === loggedUserId;
+  
+    // Se userA for o usuário logado, ele deve ser o primeiro
+    if (isUserALoggedIn) {
+      return -1;
+    }
+    // Se userB for o usuário logado, ele deve ser o primeiro
+    else if (isUserBLoggedIn) {
+      return 1;
+    }
+  
+    // Continua com a lógica original de priorização, ordem alfabética e nível de autorização
+    if (userA.status === 'active' && userB.status !== 'active') {
+      return -1;
+    } else if (userA.status !== 'active' && userB.status === 'active') {
+      return 1;
+    }
+  
+    const nameComparison = userA.name.localeCompare(userB.name);
+  
+    if (nameComparison !== 0) {
+      return nameComparison;
+    }
+  
+    const authorizationComparison = userB.authorizationLevel - userA.authorizationLevel;
+  
+    return authorizationComparison;
+  };
 
   // useEffect(() => {
   //   usersRegistred.map((user) => {
