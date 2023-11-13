@@ -462,9 +462,10 @@ const compararDatas = (a, b) => {
     <div className="row-span-5 col-start-5 bg-white rounded-lg shadow-md text-center h-full  overflow-auto">
     <h2 className="text-2xl font-extrabold mb-4 ">Usuários</h2>
     {/* <p>aqui é a lista de usuarios</p> */}
-    {usersRegistred.sort(compareUsers).map((user) => (
-
-      <div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={user.status === 'active' ? () => router.push(`/openview/${user.email}`) : null} >
+    {usersRegistred.sort(compareUsers).map((user) => {
+      console.log(user)
+return (
+      <div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' && JSON.parse(localStorage.getItem('user')).id !== user.id ? 'cursor-pointer' : 'cursor-not-allowed'} ${JSON.parse(localStorage.getItem('user')).id === user.id ? 'border-purple-500 border-2' : ''}`} onClick={user.status === 'active'&& JSON.parse(localStorage.getItem('user')).id !== user.id ? () => router.push(`/pvp/${user.email}`) : null} >
         <div className="w-2/3  text-end">
           <h2 className="text-xl font-bold mb-0">{user.name}</h2>
           <p className="text-gray-600 mb-0 text-sm">{user.email}</p>
@@ -473,9 +474,9 @@ const compararDatas = (a, b) => {
           </p>
         </div>
         <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
-      </div>
+      </div>)
 
-    ))}
+    })}
 
     </div>
   

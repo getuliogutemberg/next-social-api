@@ -9,7 +9,7 @@ import { SyncLoader } from 'react-spinners';
  import { addDoc ,updateDoc,doc} from 'firebase/firestore';
 import { FiLogIn } from 'react-icons/fi';
 import {TfiComments} from 'react-icons/tfi';
-import {AiFillHeart} from 'react-icons/ai';
+import {AiFillHeart,AiOutlineHeart} from 'react-icons/ai';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
  
@@ -247,6 +247,31 @@ const compareUsers = (userA, userB) => {
   // }
 
 
+  const handleLike = async (post) => {
+    if(post.likes.filter(like => like.id === JSON.parse(localStorage.getItem('user')).id).length > 0) {
+      const likesAfter = post.likes.filter(like => like.id !== JSON.parse(localStorage.getItem('user')).id);
+      
+      await updateDoc(doc(db, "posts", post.id),
+    {
+     likes: [
+       ...likesAfter,
+     ],
+    })
+    return
+    };
+
+    await updateDoc(doc(db, "posts", post.id),
+    {
+     likes: [
+       ...post.likes,
+       {
+         id: JSON.parse(localStorage.getItem('user')).id,
+         date: new Date(),
+       },
+       
+     ],
+    })
+  }
 
   return (
     <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-[100vh] p-4 ">
@@ -267,11 +292,11 @@ const compareUsers = (userA, userB) => {
 }).map((post)=>{
         // console.log(posts);
         return (
-          <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 w-[95%] max-h-[600px]" onClick={() => router.push(`/openview/${post.id}`)}>
+          <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 w-[95%] max-h-[600px]">
                 {post.created_at !== null && <span className="text-gray-800 text-center text-sm font-extralight  mx-4 mt-0">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm (zzzz)", {
                 locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
               })}</span>}
-            <div className='flex flex-row justify-between'>
+            <div  onClick={() => router.push(`/openview/${post.id}`)} className='flex flex-row justify-between'>
             <div className='flex flex-col'> 
               <div className="flex justify-center items-center ml-4">
                 <img
@@ -291,18 +316,18 @@ const compareUsers = (userA, userB) => {
                 {/* <h2 className='text-3xl font-extrabold  text-left capitalize '>{post.title}</h2> */}
           
             </div>
-            <div className='flex flex-row gap-4 overflow-auto'>
+            <div  onClick={() => router.push(`/openview/${post.id}`)} className='flex flex-row gap-4 overflow-x-hidden'>
             <img
                 src={post.image}
                 alt={" "}
                 className="rounded object-cover  w-[40%] h-[50%] "
               />
-            <span className="text-gray-800 text-start text-md font-extralight  max-w-[50%] h-[50%] ">{post.description}</span>
+            <span className="text-gray-800 text-start text-md font-extralight  max-w-[50%] h-[50%] break-all">{post.description}</span>
             </div>
             <div className='flex flex-row justify-end gap-4 mx-4'> 
 
-            <p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
-            <p  className="text-red-400 text-bold hover:scale-150 flex gap-4"><AiFillHeart  className='scale-150'/><p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
+            <p  onClick={() => router.push(`/openview/${post.id}`)} className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
+            <p onClick={() => JSON.parse(localStorage.getItem('user')).id !== post.createdBy.id && handleLike(post)} className=" cursor-pointer text-red-400 text-bold hover:scale-150 flex gap-4">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
             
             </div>
             
@@ -319,20 +344,21 @@ const compareUsers = (userA, userB) => {
     <div className="row-span-5 col-start-5 bg-white rounded-lg shadow-md text-center h-full  overflow-auto">
     <h2 className="text-2xl font-extrabold mb-4 ">Usuários</h2>
     {/* <p>aqui é a lista de usuarios</p> */}
-    {usersRegistred.sort(compareUsers).map((user) => (
+    {usersRegistred.sort(compareUsers).map((user) => {
+      console.log(user)
+return (
+      <div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' && JSON.parse(localStorage.getItem('user')).id !== user.id ? 'cursor-pointer' : 'cursor-not-allowed'} ${JSON.parse(localStorage.getItem('user')).id === user.id ? 'border-purple-500 border-2' : ''}`} onClick={user.status === 'active'&& JSON.parse(localStorage.getItem('user')).id !== user.id ? () => router.push(`/pvp/${user.email}`) : null} >
+        <div className="w-2/3  text-end">
+          <h2 className="text-xl font-bold mb-0">{user.name}</h2>
+          <p className="text-gray-600 mb-0 text-sm">{user.email}</p>
+          <p className={`text-xs font-semibold ${user.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+            {user.status === 'active' ? 'Logado' : 'Desconectado'}
+          </p>
+        </div>
+        <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
+      </div>)
 
-<div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' ? 'cursor-pointer' : 'cursor-not-allowed'} `} onClick={user.status === 'active' ? () => router.push(`/openview/${user.id}`) : null} >
-  <div className="w-2/3  text-end">
-    <h2 className="text-xl font-bold mb-0">{user.name}</h2>
-    <p className="text-gray-600 mb-0 text-sm">{user.email}</p>
-    <p className={`text-xs font-semibold ${user.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
-      {user.status === 'active' ? 'Logado' : 'Desconectado'}
-    </p>
-  </div>
-  <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
-</div>
-
-    ))}
+    })}
 
     </div>
     
