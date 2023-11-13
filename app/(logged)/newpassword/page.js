@@ -1,5 +1,7 @@
 "use client"
+import { getDoc,updateDoc,doc } from 'firebase/firestore';
 import { useState } from 'react';
+import { db } from '../../firebase';
 
 import { BsKey } from 'react-icons/bs';
 
@@ -7,10 +9,35 @@ export default function ChangePassword() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Lógica para validar a senha atual e atualizar a senha no banco de dados
+    const response = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id))
+    if (currentPassword === response.data().password) {
+      // Lógica para atualizar a senha no banco de dados
+      if (newPassword === confirmPassword && newPassword !== '') {
+        await updateDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id),
+          {
+            password: newPassword,
+            updated_at: new Date(),
+          })
+      } else {
+        setError('As senhas não coincidem');
+        setTimeout(() => {
+          setError('');
+        }, 3000);
+      }
+      
+    } else {
+      console.log('Senha atual incorreta, currentPassword:' + currentPassword);
+      console.log('Senha atual correta, response.data.password:' + response.data().password);
+      setError('Senha atual incorreta');
+      setTimeout(() => {
+        setError('');
+      }, 3000);
+    }
   };
 
   return (
@@ -58,9 +85,7 @@ export default function ChangePassword() {
             Alterar Senha
           </button>
         </form>
-        {/* <Link href="/" className={`flex gap-2 text-md my-4 text-gray-800`} >
-        <FiHome /> Inicio
-      </Link> */}
+        {error && <p className="text-red-500 mt-4">{error}</p>}
       
          
       </div>
