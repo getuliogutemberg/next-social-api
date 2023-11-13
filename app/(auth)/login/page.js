@@ -88,7 +88,7 @@ export default function Login() {
       console.log("Login bem-sucedido!");
       setTimeout(() => {
         router.push('/openview')
-      }, 1000)
+      }, 3000)
       // Adicione aqui a lógica para redirecionar para a rota /openview
     } else {
       // Usuário não encontrado
@@ -171,7 +171,7 @@ export default function Login() {
           </button>
           {isLoggedIn.status === false && <span className="text-red-500 font-extrabold">{isLoggedIn.message}</span>}
         </form>
-        
+        {isLoggedIn.status === true && <span className="text-green-500 font-extrabold">{isLoggedIn.message}</span>}
 
         <Link href="/register" className={`flex flex-1/2 gap-2 text-md my-4 text-gray-800`} >
                 <FiUserPlus /> Criar Conta
