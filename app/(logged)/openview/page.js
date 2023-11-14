@@ -31,11 +31,24 @@ export default function Verified() {
   const [usersRegistred, setUsersRegistered] = useState([]);
   const [posts, setPosts] = useState([]);
 
+  const [dateFilter, setDateFilter] = useState('');
+  const [nameSearch, setNameSearch] = useState('');
+
   useEffect(() => {
     
     localStorage.getItem('user') === null && router.push('/');
     // localStorage.getItem('user') !== null && JSON.parse(localStorage.getItem('user')).status !== 'active' && router.back();
   },[])
+
+  const handleFilter = async () => {
+    // try {
+    //   const response = await axios.get('http://localhost:5000/api/users');
+    //   console.log(response.data);
+    //   setUsersRegistered(response.data);
+    // } catch (error) {
+    //   console.log('Erro ao buscar os usuários:', error);
+    // }
+  }
   const getPosts = async () => {
     // try {
     //   const response = await axios.get('http://localhost:5000/api/posts');
@@ -317,16 +330,16 @@ export default function Verified() {
                 {post.created_at !== null && <span className="text-gray-800 text-center text-sm font-extralight  mx-4 mt-0">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm (zzzz)", {
                 locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
               })}</span>}
-            <div  onClick={() => router.push(`/postview/${post.id}`)} className='flex flex-row justify-between'>
-            <div className='flex flex-col'> 
-              <div className="flex justify-center items-center ml-4">
+            <div  onClick={() => router.push(`/postview/${post.id}`)} className='flex flex-row justify-between '>
+            <div className='flex flex-col  max-[900px]:w-full  '> 
+              <div className="flex justify-center items-center ml-4 max-[900px]:justify-between">
                 <img
                   src={post.createdBy.imageURL}
                   alt={post.createdBy.name}
                   className="w-16 h-16 rounded-full"
                 />
-                <div className='flex flex-col ml-4'>
-                <h2 className='text-3xl font-extrabold  text-left capitalize '>{post.title}</h2>
+                <div className='flex flex-col ml-4 max-[900px]:w-full max-[900px]:items-center'>
+                <h2 className='text-3xl font-extrabold  text-left capitalize max-[900px]:text-xl'>{post.title}</h2>
                   <p className=" text-sm text-left">{post.createdBy.name}</p>
                 
                 </div>
@@ -337,15 +350,15 @@ export default function Verified() {
                 {/* <h2 className='text-3xl font-extrabold  text-left capitalize '>{post.title}</h2> */}
           
             </div>
-            <div  onClick={() => router.push(`/postview/${post.id}`)} className='flex flex-row gap-4 overflow-x-hidden'>
+            <div  onClick={() => router.push(`/postview/${post.id}`)} className='max-[900px]:h-full flex flex-row gap-4 overflow-x-hidden max-[900px]:flex-col my-4'>
             <img
                 src={post.image}
                 alt={" "}
-                className="rounded object-cover  w-[40%] h-[50%] "
+                className="rounded object-cover  min-w-[40%] w-[40%] min-h-[100%] max-[900px]:h-full max-[900px]:w-full "
               />
-            <span className="text-gray-800 text-start text-md font-extralight  max-w-[50%] h-[50%] break-all">{post.description}</span>
+            <span className="text-gray-800 text-start text-md font-extralight  h-[50%] break-all max-[900px]:w-full overflow-x-hidden overflow-y-auto">{post.description}</span>
             </div>
-            <div className='flex flex-row justify-end gap-4 mx-4'> 
+            <div className='flex flex-row justify-end gap-4 mx-4 max-[900px]:justify-center'> 
 
             <p  onClick={() => router.push(`/postview/${post.id}`)} className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
             <p onClick={() => JSON.parse(localStorage.getItem('user')).id !== post.createdBy.id && handleLike(post)} className=" cursor-pointer text-red-400 text-bold hover:scale-150 flex gap-4">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
@@ -362,35 +375,36 @@ export default function Verified() {
     
 
     
-    <div className="row-span-5 col-start-5 bg-white rounded-lg shadow-md text-center h-full  overflow-auto">
-    <h2 className="text-2xl font-extrabold mb-4 ">Usuários</h2>
+    <div className="row-span-5 col-start-5 bg-white rounded-lg shadow-md text-center h-full  overflow-auto min-w-[60px] ">
+    <h2 className="text-2xl font-extrabold mb-4 max-[900px]:hidden ">Usuários</h2>
     {/* <p>aqui é a lista de usuarios</p> */}
     {usersRegistred.sort(compareUsers).map((user) => {
       console.log(user)
 return (
-      <div key={user.email} className={`flex px-0 mb-4 mx-4 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' && JSON.parse(localStorage.getItem('user')).id !== user.id ? 'cursor-pointer' : 'cursor-not-allowed'} ${JSON.parse(localStorage.getItem('user')).id === user.id ? 'border-purple-500 border-2' : ''}`} onClick={user.status === 'active'&& JSON.parse(localStorage.getItem('user')).id !== user.id ? () => router.push(`/pvp/${user.email}`) : null} >
-        <div className="w-2/3  text-end">
-          <h2 className="text-xl font-bold mb-0">{user.name}</h2>
-          <p className="text-gray-600 mb-0 text-sm">{user.email}</p>
-          <p className={`text-xs font-semibold ${user.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
+      <div key={user.email} className={`flex  px-0 mb-4 mx-4 max-[900px]:mx-1 max-[900px]:mt-1   max-[900px]:mb-1 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' && JSON.parse(localStorage.getItem('user')).id !== user.id ? 'cursor-pointer' : 'cursor-not-allowed'} ${JSON.parse(localStorage.getItem('user')).id === user.id ? 'border-purple-500 border-2' : ''}`} onClick={user.status === 'active'&& JSON.parse(localStorage.getItem('user')).id !== user.id ? () => router.push(`/pvp/${user.email}`) : null} >
+        <div className="w-2/3  text-end max-[1400px]:collapse">
+          <h2 className="text-xl font-bold mb-0 max-[1400px]:collapse">{user.name}</h2>
+          <p className="text-gray-600 mb-0 text-sm max-[1400px]:collapse">{user.email}</p>
+          <p className={`text-xs font-semibold max-[1400px]:collapse ${user.status === 'active' ? 'text-green-600' : 'text-red-600'}`}>
             {user.status === 'active' ? 'Logado' : 'Desconectado'}
           </p>
         </div>
-        <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
+        <img src={user.imageURL} alt={user.name} className={`w-[70px] h-[70px] mx-auto max-[1400px]:w-full max-[1400px]:object-cover ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} ${user.status === 'active' ? 'opacity-100 ' : 'opacity-30 grayscale-100'} `} />
       </div>)
 
     })}
 
     </div>
     
+   
 
     
-      <div className="col-span-4 row-start-5 bg-white rounded-lg shadow-md text-center p-4 overflow-auto ">
+      <div className=" col-span-4 row-start-5 bg-white rounded-lg shadow-md text-center p-4 overflow-auto max-[900px]:p-2 justify-center flex items-center ">
         {/* <h2 className="text-2xl font-extrabold mb-4">Novo Post</h2> */}
-        <form onSubmit={handleSubmit} className="flex gap-4">
-          <div className="flex-1 flex-col gap-4 flex ">
+        <form onSubmit={handleSubmit} className="flex gap-4 max-[900px]:gap-2  w-full ">
+          <div className="flex-1 flex-col gap-4 flex max-[900px]:gap-2 ">
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 max-[900px]:gap-2">
             {/* <label htmlFor="title" className="block text-gray-600 text-left">Título:</label> */}
             <input
             placeholder='Título'
@@ -398,7 +412,7 @@ return (
               id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-[70%] border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+              className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             />
             {/* <label htmlFor="image" className="block text-gray-600 text-left">Imagem (URL):</label> */}
             <input
@@ -407,7 +421,7 @@ return (
               id="image"
               value={image}
               onChange={(e) => setImage(e.target.value )}
-              className="w-[30%]  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+              className="w-full  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             />
           </div>
          
@@ -420,30 +434,55 @@ return (
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows="4"
-              className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+              className="h-full w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             ></textarea>
           </div>
           
           </div>
           <button
             type="submit"
-            className="w-60 h-[10vh] min-h-fit m-2 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
+            className="flex-1 max-w-fit py-14 px-4 min-h-fit m-0 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
           >
             Postar
           </button>
         </form>
       
+    <div className=" max-[700px]:hidden w-full col-span-4 row-start-5  rounded-lg text-center p-4 overflow-auto max-[900px]:p-2 justify-center flex items-center ">
+    {/* <h2 className="text-2xl font-extrabold mb-4">filtros</h2> */}
+    <form onSubmit={handleFilter} className="  flex flex-row gap-4 max-[900px]:gap-2  w-full ">
+      <div className="flex flex-col gap-4 max-[900px]:gap-2 w-full ">
+      <input
+            placeholder='Buscar por nome:'
+            type="text"
+            id="name"
+            value={nameSearch}
+            onChange={(e) => setNameSearch(e.target.value)}
+            className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+           />
+          {/* <label htmlFor="image" className="block text-gray-600 text-left">Imagem (URL):</label> */}
+          <input
+            placeholder='Buscar por data:'
+            type="date"
+            id="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-full  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+            />
+            </div>
+        <button
+            type="submit"
+            className="flex-1 max-w-fit py-14 px-4 min-h-fit m-0 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
+          >
+            Filtrar
+          </button>
+
+      </form>
     </div>
 
-      
-        
-        
+    </div>
+
     
-
-      
-
-
-      
+          
   </div>
   );
 }

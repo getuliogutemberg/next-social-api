@@ -2,7 +2,7 @@
   "name": "next-social-api",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+ 
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "build": "next build",

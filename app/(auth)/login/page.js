@@ -88,7 +88,7 @@ export default function Login() {
       console.log("Login bem-sucedido!");
       setTimeout(() => {
         router.push('/openview')
-      }, 3000)
+      }, 1000)
       // Adicione aqui a lógica para redirecionar para a rota /openview
     } else {
       // Usuário não encontrado

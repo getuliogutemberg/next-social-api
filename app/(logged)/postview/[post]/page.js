@@ -309,7 +309,7 @@ const compararDatas = (a, b) => {
         // console.log(post)
         
         return (
-          <div key={post._id} className={`flex flex-row justify-between h-[77.6vh] gap-4 w-[100%] ${posts.filter((post) => post.id !== params.post) === undefined ? 'mx-[10%]' : ' '}`}>
+          <div key={post._id} className={`flex max-[900px]:flex-col flex-row justify-between h-[77.6vh] gap-4 w-[100%] ${posts.filter((post) => post.id !== params.post) === undefined ? 'mx-[10%]' : ' '}`}>
           <div className="bg-gray-100 rounded-lg  shadow-md p-4 flex flex-col justify-between  w-[100%]  mb-4 overflow-auto overflow-x-hidden " >
             <div className='flex flex-row justify-between'>
                 <h2 className='text-3xl font-extrabold  text-left  capitalize'>{post.title}</h2>
@@ -323,9 +323,9 @@ const compararDatas = (a, b) => {
             <img
                 src={post.image}
                 alt={" "}
-                className="rounded object-contain  w-[100%] min-h-[75%]  "
+                className="rounded object-contain  w-full min-h-fit bg-red-400"
               />
-              <span className="text-gray-800 text-start text-md font-light">{post.description}</span>
+              <span className="text-gray-800 text-start text-md font-light ">{post.description}</span>
               
               <span className="text-gray-800 text-center text-sm font-extralight">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm (zzzz)", {
                 locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
@@ -354,11 +354,11 @@ const compararDatas = (a, b) => {
               
               
               </div> */}
-              <div className="flex flex-col gap-4 rounded min-w-[300px] mt-4" id='comments'>
+              <div className="flex flex-col gap-4 rounded w-full mt-4" id='comments'>
               {post.comments.length > 0 && post.comments.sort(compararDatas).map((comment) => {
                 console.log(post)
                 return (
-                  <div key={comment._id} className={`flex flex-row items-start gap-4 ${post.createdBy.id === comment.user.id ? 'justify-end' : 'justify-start'}`}>
+                  <div key={comment._id} className={`flex flex-row items-start gap-4  ${post.createdBy.id === comment.user.id ? 'justify-end' : 'justify-start'}`}>
                     {post.createdBy.id === comment.user.id  ? 
                     (
                       <div className="flex flex-col justify-center items-end gap-2">
@@ -393,7 +393,7 @@ const compararDatas = (a, b) => {
 
           </div>
 
-          {posts.filter((post) => post.id !== params.post  ) && <div className="flex flex-col gap-4   overflow-auto overflow-x-hidden rounded min-w-[300px] mb-4">
+          {posts.filter((post) => post.id !== params.post  ) && <div className="flex flex-col gap-4   overflow-auto overflow-x-hidden rounded min-w-[300px] mb-4 max-[900px]:hidden ">
           {posts.filter((post) => {
             return post.id !== params.post
           }).map((post)=>{
@@ -449,7 +449,7 @@ const compararDatas = (a, b) => {
             <img
               src={JSON.parse(localStorage.getItem('user')).imageURL}
               alt="Imagem"
-              className="w-[90px] h-[90px]  object-cover scale-[-1] rotate-180 m-4"
+              className="w-[90px] h-[90px]  object-cover scale-[-1] rotate-180 m-4 max-[900px]:hidden"
             />
             {/* <h3 className="text-2xl font-extrabold  flex flex-1 items-center justify-start">{JSON.parse(localStorage.getItem('user')).name}</h3> */}
             
@@ -469,7 +469,7 @@ const compararDatas = (a, b) => {
           </div>
           <button
             type="submit"
-            className="w-60 h-[10vh] min-h-fit m-2 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
+            className="w-60 h-[10vh] max-[900px]:w-fit min-h-fit m-2 p-4 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 self-center"
           >
             Comentar
           </button>
