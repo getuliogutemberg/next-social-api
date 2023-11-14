@@ -3,14 +3,14 @@
 import ActionBar from '@/app/components/ActionBar';
 import UserList from '@/app/components/UserList';
 import Timeline from '@/app/components/Timeline';
-import MainLayout from '@/app/components/MainLayout';
+import MainGrid from '@/app/components/MainGrid';
 
 export default function Verified() {
 
  
  
   return (
-    <MainLayout>
+    <MainGrid>
     
     <Timeline level={1}/>
     
@@ -18,6 +18,6 @@ export default function Verified() {
     
     <ActionBar level={1}/>
 
-    </MainLayout> 
+    </MainGrid> 
   );
 }

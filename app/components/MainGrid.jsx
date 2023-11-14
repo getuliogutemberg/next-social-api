@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 
-const MainLayout = (props) => {
+const MainGrid = (props) => {
 
     const router = useRouter();
 
@@ -19,4 +19,4 @@ const MainLayout = (props) => {
   )
 }
 
-export default MainLayout
+export default MainGrid
