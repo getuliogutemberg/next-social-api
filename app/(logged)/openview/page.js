@@ -4,16 +4,16 @@ import UserList from '../../components/UserList';
 import ActionBar from '../../components/ActionBar';
 import MainGrid from '@/app/components/MainGrid';
 
-export default function Verified() {
-
+export default function OpenView() {
+  const level = 0
   return (
     <MainGrid>
 
-    <Timeline  level={0}/>
+    <Timeline  level={level}/>
 
-    <UserList level={0}/>
+    <UserList level={level}/>
     
-    <ActionBar level={0}/>
+    <ActionBar level={level}/>
     
           
     </MainGrid>

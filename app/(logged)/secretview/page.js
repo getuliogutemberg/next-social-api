@@ -5,18 +5,18 @@ import UserList from '@/app/components/UserList';
 import Timeline from '@/app/components/Timeline';
 import MainGrid from '@/app/components/MainGrid';
 
-export default function Verified() {
+export default function SecretView() {
 
- 
+  const level = 1
  
   return (
     <MainGrid>
     
-    <Timeline level={1}/>
+    <Timeline level={level}/>
     
-    <UserList level={1}/>
+    <UserList level={level}/>
     
-    <ActionBar level={1}/>
+    <ActionBar level={level}/>
 
     </MainGrid> 
   );

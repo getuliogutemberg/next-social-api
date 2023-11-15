@@ -5,7 +5,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FiHome ,FiUserPlus,FiLogIn} from 'react-icons/fi';
 import { useRouter } from 'next/navigation'
-import axios from '../../axios';
 import { doc, getDocs,collection, query, updateDoc, where, limit } from "firebase/firestore";
 import {db} from '../../firebase';
 
@@ -31,45 +30,12 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // console.log('Dados do formulário:', formData);
-    // try {
-    //   const response = await axios.post('http://localhost:5000/api/login', formData);
-    //   console.log('Resposta do servidor:', response.data.message);
-    //   console.log('token:', response.data.authToken);
-    //   localStorage.setItem('authToken', response.data.authToken);
-    //   localStorage.setItem('user', JSON.stringify(response.data.user));
-    //   setIsLoggedIn({
-    //     status: true,
-    //     message: response.data.message,
-    //   })
-
-    //   router.push('/openview');
-    // } catch (error) {
-    //   console.log('Erro ao entrar.', error);
-    //   setIsLoggedIn({
-    //     status: false,
-    //     message: error.response.data.message,
-    //   })
-    //   setTimeout(() => {
-    //     setIsLoggedIn({
-    //       status: false,
-    //       message: '',
-    //     })
-
-    //     router.push(
-    //       '/register'
-    //     );
-    //   }, 3000);
-    // }
-    // Envie os dados de login para a API ou serviço de autenticação
-
-    // login com email e senha no firebase
     try {
     const usersCollection = collection(db, "users");
     const querySnapshot = await getDocs(query(usersCollection, where("email", "==", formData.email), where("password", "==", formData.password), limit(1)));
 
     if (querySnapshot.docs.length > 0) {
-      // Usuário encontrado, atualizar o status para "active"
+      // Usuário encontrado
       const userDoc = querySnapshot.docs[0];
       const userRef = doc(db, "users", userDoc.id);
 
@@ -89,7 +55,7 @@ export default function Login() {
       setTimeout(() => {
         router.push('/openview')
       }, 1000)
-      // Adicione aqui a lógica para redirecionar para a rota /openview
+      
     } else {
       // Usuário não encontrado
       console.error("Usuário não encontrado");
@@ -103,11 +69,8 @@ export default function Login() {
           message: '',
         })
 
-        // router.push(
-        //   '/register'
-        // );
       }, 3000);
-      // Adicione aqui a lógica para lidar com o erro (por exemplo, exibir uma mensagem de erro)
+      
     }} catch (error) {
       // Tratar erros
       console.error("Erro ao fazer login:", error.message ,'Redirecionando para o registro em 3s...');
@@ -125,14 +88,14 @@ export default function Login() {
               '/register'
             );
           }, 3000);
-      // Adicione aqui a lógica para lidar com o erro (por exemplo, exibir uma mensagem de erro)
+      
     }
   };
 
 
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-around bg-slate-900">
+    <div className="min-h-screen flex flex-col items-center justify-around  bg-slate-900">
 
 
       <div className="w-full max-w-md p-4 bg-white rounded-md">
@@ -180,7 +143,7 @@ export default function Login() {
       </div>
 
       <Link href="/" className={`flex items-center justify-center gap-2 text-2xl text-gray-300 hover:text-purple-800`} >
-<FiHome className='text-[40px] flex items-center justify-center '/><h3 className='text-white font-extrabold text-xl'>Inicio</h3>
+        <FiHome className='text-[40px] flex items-center justify-center '/><h3 className='text-white font-extrabold text-xl'>Inicio</h3>
       </Link>
      
     </div>
