@@ -9,7 +9,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'NextSocialApi',
+  title: 'Capybaquígrafo',
   description: 'Developed by github.com/getuliogutemberg',
 }
 

