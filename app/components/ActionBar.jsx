@@ -11,6 +11,9 @@ const ActionBar = (props) => {
   const [dateFilter, setDateFilter] = useState('');
   const [nameSearch, setNameSearch] = useState('');
 
+  const [postError, setPostError] = useState('');
+  const [filterError, setFilterError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -38,30 +41,14 @@ const ActionBar = (props) => {
           created_at: new Date(),
           updated_at: new Date(),
           deleted_at: null,
-          permission: 'public',
+          permission: props.level === 0 ? 'público' : 'secreto',
           level: props.level
         };
 
-         // Crie um objeto com os dados do novo post
-        //  const newPost = {
-        //   title,
-        //   description,
-        //   image: image!==''? image :'https://img.freepik.com/free-photo/abstract-textured-backgound_1258-30588.jpg',
-        //   comments: [],
-        //   likes: [],
-        //   createdBy: creator, // Substitua pelo nome do usuário real
-        //   created_at: new Date(),
-        //   updated_at: new Date(),
-        //   deleted_at: null,
-        //   permission: 'limited',
-        //   level: 1
-        // };
+        
 
     try {
-      // Chame a função de callback para enviar o novo post para o servidor
-      // const response = await axios.post('http://localhost:5000/api/posts',newPost)
-      // console.log(newPost);
-      // Limpe os campos do formulário
+     
       const response = await addDoc(collection(db, "posts" ), newPost);
       await updateDoc(doc(db, "posts", response.id), 
     
@@ -84,14 +71,16 @@ const ActionBar = (props) => {
     
   };
 
-  const handleFilter = async () => {
-    // try {
-    //   const response = await axios.get('http://localhost:5000/api/users');
-    //   console.log(response.data);
-    //   setUsersRegistered(response.data);
-    // } catch (error) {
-    //   console.log('Erro ao buscar os usuários:', error);
-    // }
+  const handleFilter = async (e) => {
+    e.preventDefault();
+    if (dateFilter === '' || nameSearch === '') {
+      setFilterError('Os campos de data e nome precisam estar preenchidos.');
+      setTimeout(() => {
+        setFilterError('');
+      }, 3000);
+      return;
+    } 
+    
   }
 
   return (
@@ -108,7 +97,7 @@ const ActionBar = (props) => {
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+          className={`w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900 ${postError ? 'border-red-500 border-2 border-dashed' : ''} `}
         />
         {/* <label htmlFor="image" className="block text-gray-600 text-left">Imagem (URL):</label> */}
         <input
@@ -130,7 +119,7 @@ const ActionBar = (props) => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           
-          className="h-full w-full  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+          className={`h-full w-full  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900 ${postError ? 'border-red-500 border-2 border-dashed' : ''} `}
         ></textarea>
       </div>
       
@@ -153,7 +142,7 @@ const ActionBar = (props) => {
         id="name"
         value={nameSearch}
         onChange={(e) => setNameSearch(e.target.value)}
-        className="w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+        className={`w-full border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900 ${filterError ? 'border-red-500 border-2 border-dashed' : ''} `}
        />
       {/* <label htmlFor="image" className="block text-gray-600 text-left">Imagem (URL):</label> */}
       <input
@@ -162,7 +151,7 @@ const ActionBar = (props) => {
         id="date"
         value={dateFilter}
         onChange={(e) => setDateFilter(e.target.value)}
-        className="w-full  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
+        className={`w-full  border rounded-sm focus:outline-none focus:ring focus:ring-purple-900 text-gray-900 ${filterError ? 'border-red-500 border-2 border-dashed' : ''} `}
         />
         </div>
 
@@ -175,8 +164,8 @@ const ActionBar = (props) => {
 
   </form>
 </div>
-
 </div>
+
   )
 }
 

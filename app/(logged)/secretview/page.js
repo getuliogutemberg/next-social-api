@@ -10,7 +10,7 @@ export default function SecretView() {
   const level = 1
  
   return (
-    <MainGrid>
+    <MainGrid level={level}>
     
     <Timeline level={level}/>
     
