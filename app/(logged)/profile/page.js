@@ -8,11 +8,20 @@ import { db } from '../../firebase';
 export default function Profile() {
   const router = useRouter();
   const [save, setSave] = useState(false);
-  const [userProfile, setUserProfile] = useState({
-    name: JSON.parse(localStorage.getItem('user')).name,
-    imageURL: JSON.parse(localStorage.getItem('user')).imageURL,
-    // Outros campos do perfil
+  const [user, setUser] = useState({
+    
   });
+
+  const getUser = async () =>{
+    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id));
+    console.log(user.data());
+    
+    setUser(user.data());
+  }
+
+  useEffect(() => {
+    getUser()
+  },[])
 
   useEffect(() => {
     // Lógica para buscar os dados do perfil do usuário no servidor
@@ -21,26 +30,40 @@ export default function Profile() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserProfile({ ...userProfile, [name]: value });
+    setUser({ ...user, [name]: value });
   };
 
+  const handleCheckboxChange = async(e) => {
+    const { name, checked } = e.target;
+    setUser({ ...user, [name]: checked === 'on' ? true : false });
+
+  }
+
+  const handleSelectChange = async(e) => {
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: parseInt(value) });
+  }
   const handleSubmit = async(e) => {
     e.preventDefault();
-    await updateDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id),
+    await updateDoc(doc(db, "users", user.id),
     {
-      name: userProfile.name,
-      imageURL: userProfile.imageURL,
+      name: user.name,
+      imageURL: user.imageURL,
+      email: user.email,
+      level: user.level,
+      admin: user.admin,
+      verified: user.verified,
       updated_at: new Date(),
       
     })
 
-    const response = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id))
+    const response = await getDoc(doc(db, "users", user.id))
 
     const {password, ...newUser} = response.data()
 
     localStorage.setItem('user', JSON.stringify(newUser))
 
-    // router.push('/openview')
+    
     router.refresh()
     setSave(true)
     setTimeout(() => {
@@ -62,23 +85,14 @@ export default function Profile() {
         </div>
         
         <form onSubmit={handleSubmit} className="flex flex-col items-start justify-center">
-        <div className="flex flex-row">
+        <div className="flex flex-row max-[500px]:flex-col max-[500px]:w-full" >
         <div className="flex flex-col items-center justify-center">
         <img
-          src={userProfile.imageURL}
+          src={user.imageURL}
           alt="Profile"
           className="w-[300px] rounded"
         />
-            {/* <label htmlFor="imageURL" className="block text-gray-600">URL da Imagem de Perfil:</label> */}
-            {/* <input
-              type="text"
-              id="imageURL"
-              name="imageURL"
-              placeholder='URL da imagem de perfil'
-              // defaultValue={JSON.parse(localStorage.getItem('user')).imageURL}
-              onChange={handleInputChange}
-              className="w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600"
-            /> */}
+           
           </div>
         
           <div className="flex flex-col w-full">
@@ -87,7 +101,7 @@ export default function Profile() {
               type="text"
               id="name"
               name="name"
-              defaultValue={JSON.parse(localStorage.getItem('user')).name}
+              defaultValue={user.name}
               onChange={handleInputChange}
               className="w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer"
             />
@@ -96,37 +110,37 @@ export default function Profile() {
               type="text"
               id="email"
               name="email"
-              disabled={true}
-              defaultValue={JSON.parse(localStorage.getItem('user')).email}
+              disabled={user.admin ? false : user.level === 1 ? false : true}
+              defaultValue={user.email}
               onChange={handleInputChange}
-              className="w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer"
+              className={`w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${user.admin ? false : user.level === 1 ? '' : 'opacity-50 '}`}
             />
-<div className="flex items-center justify-start px-3 gap-4  py-1">
-<label htmlFor="admin" className=" text-gray-600">Autorização</label>
+            <div className="flex items-center justify-start px-3 gap-4  py-1">
+            <label htmlFor="admin" className={`text-gray-600 ${user.admin ? false : user.level === 1 ? '' : 'opacity-50 '}`}>Autorização</label>
             <select
               type="selector"
               id="level"
               name="level"
-              disabled={true}
-              defaultValue={JSON.parse(localStorage.getItem('user')).level}
-              onChange={handleInputChange}
-              className="w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer"
+              disabled={user.admin ? false : user.level === 1 ? false : true}
+              // defaultValue={0}
+              onChange={handleSelectChange}
+              className={`w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${user.admin ? false : user.level === 1 ? '' : 'opacity-50 '}`}
             >
-              <option value="0">Limitada</option>
-              <option value="1">Ilimitada</option>
+              {user.level === 0 ? <><option value={0} selected >Limitada</option> <option value={1} >Ilimitada</option> </> : <><option value={0}  >Limitada</option> <option value={1} selected>Ilimitada</option></>}
+              
               
             </select>
             </div>
 
  <div className="flex items-center justify-start px-3 gap-4  py-1">
- <label htmlFor="admin" className=" text-gray-600">Administrador</label><input
+ <label htmlFor="admin" className={` text-gray-600 ${user.admin ? '' : 'opacity-50 '}`}>Administrador</label><input
               type="checkbox"
               id="admin"
               name="admin"
-              disabled={true}
-              defaultValue={JSON.parse(localStorage.getItem('user')).admin}
-              onChange={handleInputChange}
-              className=" rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer"
+              disabled={user.admin ? false : true}
+              checked={user.admin ? true : false}
+              onChange={handleCheckboxChange}
+              className={` rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${user.admin ? '' : 'opacity-50 '}`}
             />
 </div>
           </div>
@@ -138,10 +152,10 @@ export default function Profile() {
               type="text"
               id="imageURL"
               name="imageURL"
-              placeholder='URL da imagem de perfil'
+              placeholder='Cole a aqui URL da imagem'
               // defaultValue={JSON.parse(localStorage.getItem('user')).imageURL}
               onChange={handleInputChange}
-              className="w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer"
+              className="w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer text-center"
             />
           <button
             type="submit"
