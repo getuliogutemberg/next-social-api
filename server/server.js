@@ -8,6 +8,8 @@ app.use(bodyParser.json());
 // Configurar o CORS
 app.use(cors());
 
+const PORT = 3001;
+
 // Simulando um banco de dados (substitua isso pelo seu banco de dados real)
 const users = [
   {
@@ -226,6 +228,6 @@ app.get('/api/posts', (req, res) => {
 
 // Outras configurações do servidor...
 
-app.listen(5000, () => {
-  console.log('Servidor está ouvindo na porta 5000');
+app.listen(PORT, () => {
+  console.log('Servidor está ouvindo na porta :' + PORT);
 });
