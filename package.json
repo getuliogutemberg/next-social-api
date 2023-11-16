@@ -4,11 +4,11 @@
   "private": true,
  
   "scripts": {
-    "build": "next build && npm run startServer",
+    "build": "next build",
     "start": "concurrently \"npm run server\" \"npm run startClient\"",
     "startClient": "next start",
     "buildClient": "next build",
-    "startServer": "node server/server.js -p 5000",
+    "startServer": "node server/server.js",
     "dev": "concurrently \"npm run devServer\" \"npm run devServer\"",
     "devServer": "nodemon server/server.js ",
     "devClient": "next dev",
