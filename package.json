@@ -4,7 +4,7 @@
   "private": true,
  
   "scripts": {
-    "build": "concurrently \"npm run server\" \"npm run startClient\"",
+    "build": "next build && npm run startServer",
     "start": "concurrently \"npm run server\" \"npm run startClient\"",
     "startClient": "next start",
     "buildClient": "next build",
