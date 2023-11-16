@@ -2,12 +2,10 @@
   "name": "next-social-api",
   "version": "0.1.0",
   "private": true,
- 
   "scripts": {
     "build": "next build",
-    "start": "concurrently \"npm run server\" \"npm run startClient\"",
+    "start": "concurrently \"npm run startServer\" \"npm run startClient\"",
     "startClient": "next start",
-    "buildClient": "next build",
     "startServer": "node server/server.js",
     "dev": "concurrently \"npm run devServer\" \"npm run devServer\"",
     "devServer": "nodemon server/server.js ",
@@ -27,6 +25,7 @@
     "firebase": "^10.6.0",
     "next": "14.0.1",
     "next-auth": "^4.24.5",
+    "nodemon": "^3.0.1",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^4.11.0",
