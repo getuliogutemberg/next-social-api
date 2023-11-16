@@ -3,17 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "next dev",
     "build": "next build",
-    "start": "concurrently \"npm run startServer\" \"npm run startClient\"",
-    "startClient": "next start",
-    "startServer": "node server/server.js",
-    "dev": "concurrently \"npm run devServer\" \"npm run devServer\"",
-    "devServer": "nodemon server/server.js ",
-    "devClient": "next dev",
-    "lint": "next lint",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "start": "next start",
+    "lint": "next lint"
+    
   },
   "dependencies": {
     "@material-tailwind/react": "^2.1.4",

@@ -27,7 +27,7 @@ export default function Home() {
         </div>
         <img
           src="https://www.pngall.com/wp-content/uploads/13/Capybara-PNG-Image.png"
-          alt="Logo"
+          alt=" "
           className='w-[500px] h-[500px] absolute bottom-0 ml-[35%] scale-x-[-1] max-[1200px]:w-[200px] max-[1200px]:h-[200px] max-[1200px]:ml-[35%] max-[1200px]:scale-x-[1] max-[1200px]:right-0 '
         />
       </div>
