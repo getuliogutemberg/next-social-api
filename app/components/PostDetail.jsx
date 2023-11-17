@@ -263,7 +263,7 @@ const PostDetail = (props) => {
               return null;
             }
         return (
-          <div key={post._id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  flex flex-col justify-center items-center cursor-pointer w-[300px] min-h-[300px]" onClick={() => router.push(`/postview/${post.id}`)}>
+          <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  flex flex-col justify-center items-center cursor-pointer w-[300px] min-h-[300px]" onClick={() => router.push(`/postview/${post.id}`)}>
           
              
             <img

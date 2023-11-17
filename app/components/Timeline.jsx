@@ -67,7 +67,9 @@ const Timeline = (props) => {
   // Ajuste a ordem da subtração se desejar ordenar de outra forma
   return timeB - timeA;
 }).map((post)=>{
-        if (post.level > props.level) {
+        // if (post.level > props.level) {
+        if (post.level !== props.level) {
+
           return null;
         }
         // console.log(posts);
