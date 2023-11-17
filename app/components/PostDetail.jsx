@@ -15,6 +15,7 @@ import {db} from '../firebase';
 
 const PostDetail = (props) => {
 
+  const router = useRouter();
 
     const [posts, setPosts] = useState([]);
     const [comment, setComment] = useState('');
@@ -131,6 +132,8 @@ const PostDetail = (props) => {
         })
         
       }, [])
+      
+      
 
       useEffect(() => {
         posts.filter((post) => post.id === props.params.post).map((post) => {
@@ -142,20 +145,7 @@ const PostDetail = (props) => {
     
 
 
-      useEffect(() => {
-        const q = query(collection(db, 'posts'));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const posts = [];
-    
-          querySnapshot.forEach((doc) => {
-            posts.push({...doc.data(), id: doc.id});
-          })
-    
-          setPosts(posts);
-    
-        })
-        
-      }, [])
+      
 
   return (
     <div className="col-span-10 row-span-6   rounded-lg text-center overflow-auto max-h-[100vh]">
