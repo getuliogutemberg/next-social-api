@@ -85,7 +85,7 @@ const PostDetail = (props) => {
         try{
     
         
-        await updateDoc(doc(db, "posts", params.post),
+        await updateDoc(doc(db, "posts", props.params.post),
         {
          comments: [
            ...postOpened.comments,
