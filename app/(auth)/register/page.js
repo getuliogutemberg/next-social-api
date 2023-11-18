@@ -145,7 +145,7 @@ export default function Register() {
           ...userSaved
         } = userRegistred.data();
 
-        localStorage.setItem("user",JSON.stringify(userSaved));
+        localStorage.setItem("user_id", JSON.stringify(response.id));
         setRegistrationStatus({ success: false, error: 'Registrando usuário...' });
         setTimeout(() => {
           setRegistrationStatus({ success: true, error: null });
