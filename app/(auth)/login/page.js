@@ -6,11 +6,13 @@ import Link from 'next/link';
 import { FiHome ,FiUserPlus,FiLogIn} from 'react-icons/fi';
 import { useRouter } from 'next/navigation'
 import { doc, getDocs,collection, query, updateDoc, where, limit } from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import {db} from '../../firebase';
 
 
 
 export default function Login() {
+  const auth = getAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: '',
@@ -29,66 +31,64 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-    const usersCollection = collection(db, "users");
-    const querySnapshot = await getDocs(query(usersCollection, where("email", "==", formData.email), where("password", "==", formData.password), limit(1)));
-
-    if (querySnapshot.docs.length > 0) {
-      // Usuário encontrado
-      const userDoc = querySnapshot.docs[0];
-      const userRef = doc(db, "users", userDoc.id);
-
-      const {password, ...user} = userDoc.data();
-      localStorage.setItem("user", JSON.stringify(user)); // Atualizar o localStorage com o ID do userRef);
-      await updateDoc(userRef, {
-        status: "active",
+      
+      const { email, password } = formData;
+      console.log(email, password)
+  
+      // Autentica o usuário no Firebase Authentication
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  
+      // O usuário foi autenticado com sucesso
+      const user = userCredential.user;
+  
+      // Agora, você pode acessar as informações do usuário (por exemplo, UID)
+      const uid = user.uid;
+  
+      // Você pode também acessar outras informações disponíveis no objeto 'user'
+      // Consulte a documentação do Firebase para mais detalhes sobre as informações disponíveis.
+  
+      // Exemplo de como você pode armazenar informações no localStorage
+      localStorage.setItem("user", JSON.stringify({
+        uid: user.uid,
+        email: user.email,
+        // Outras informações do usuário, se necessário
+        name: user.displayName,
+        imageURL: user.photoURL,
+       
+      }));
+  
+      // Atualiza o status do usuário no Firestore (se necessário)
+      await updateDoc(doc(db, "users", user.uid), {
+        status: 'active',
         updated_at: new Date(),
+      })
+  
+      setIsLoggedIn({
+        status: true,
+        message: "Login bem-sucedido!",
       });
-      setIsLoggedIn(
-        {
-          status: true,
-          message: "Login bem-sucedido!",
-        }
-      )
+  
       console.log("Login bem-sucedido!");
       setTimeout(() => {
-        router.push('/openview')
-      }, 1000)
-      
-    } else {
-      // Usuário não encontrado
-      console.error("Usuário não encontrado");
+        router.push('/openview');
+      }, 1000);
+    } catch (error) {
+      // Tratar erros de autenticação
+      console.log("Erro ao fazer login:", error.code);
+  
       setIsLoggedIn({
         status: false,
         message: 'Email ou senha inválido. Por favor, tente novamente.',
-      })
+      });
+  
       setTimeout(() => {
         setIsLoggedIn({
           status: false,
           message: '',
-        })
-
+        });
       }, 3000);
-      
-    }} catch (error) {
-      // Tratar erros
-      console.error("Erro ao fazer login:", error.message ,'Redirecionando para o registro em 3s...');
-      setIsLoggedIn({
-        status: false,
-        message: error.message,
-      })
-      setTimeout(() => {
-            setIsLoggedIn({
-              status: false,
-              message: '',
-            })
-    
-            router.push(
-              '/register'
-            );
-          }, 3000);
-      
     }
   };
 

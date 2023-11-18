@@ -5,10 +5,13 @@ import Link from 'next/link';
 import { FiUser, FiHome,FiUserPlus } from 'react-icons/fi';
 import axios from '../../axios';
 import { useRouter } from 'next/navigation';
-import { collection,addDoc ,updateDoc,doc,getDoc} from 'firebase/firestore';
+import { collection,addDoc ,updateDoc,doc,getDoc, setDoc} from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+
 import { db } from '../../firebase';
 export default function Register() {
 
+  const auth = getAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
@@ -75,21 +78,55 @@ export default function Register() {
   // };
 
   // add new user to firebase
+
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log("User:", user);
+  
+      // Adicione o código para atualizar os dados do usuário no Firestore, se necessário.
+      const docRef = await setDoc(doc(db, "users", user.uid), { 
+        status: 'active',
+        updated_at: new Date(),
+        name: user.displayName,
+        email: user.email,
+        imageURL: user.photoURL,
+        created_at: new Date(),
+        admin: false,
+        level: 0,
+        verified: false,
+        id: user.uid,
+        deleted_at: null
+
+      });
+  
+      localStorage.setItem("user", JSON.stringify(docRef.getData()));
+      router.push('/openview');
+    } catch (error) {
+      console.error("Erro ao fazer login com o Google: ", error);
+    }
+  };
   const handleSubmit = async (e) => {
     
     e.preventDefault();
 
     if (formData.name !== '' && formData.email !== '' && formData.password !== '') {
-      if (formData.password === 'capyba') {
-        formData.imageURL = 'https://mikeallegra.files.wordpress.com/2022/09/capy-sayin-hi.jpg';
+      if (formData.password === '123456' && formData.email === 'admin@admin.com') {
+        formData.imageURL = 'https://trainengine.ai/_next/image?url=https%3A%2F%2Fdata.trainengine.io%2Foutputs%2Fimages%2F2f4igndbvj5m7odsqi5v6o7wmq.png&w=640&q=75';
         formData.admin = true;
         formData.level = 1;
       }
       try {
-        
+
+        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        // const user = userCredential.user;
+        // console.log("User:", user.uid);
+
         const response = await addDoc(collection(db, "users" ), formData);
         
-        await updateDoc(doc(db, "users", response.id), 
+        await updateDoc(doc(db, "users",response.id), 
     
         {
           id: response.id,
@@ -98,12 +135,12 @@ export default function Register() {
         );
 
 
-        const user = await getDoc(doc(db, "users", response.id));
+        const userRegistred = await getDoc(doc(db, "users", response.id));
 
         const {
           password,
           ...userSaved
-        } = user.data();
+        } = userRegistred.data();
 
         localStorage.setItem("user",JSON.stringify(userSaved));
         setRegistrationStatus({ success: false, error: 'Registrando usuário...' });
@@ -186,6 +223,13 @@ export default function Register() {
         <Link href="/login" className={`flex flex-1/2 gap-2 text-md my-4 text-gray-800`} >
           <FiUser /> Já tem uma conta? Faça login
         </Link>
+        <button
+  type="button"
+  onClick={handleGoogleLogin}
+  className="w-full py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-500"
+>
+  Entrar com o Google
+</button>
       </div>
       <Link href="/" className={`flex items-center justify-center gap-2 text-2xl text-gray-300 hover:text-purple-800`} >
 <FiHome className='text-[40px] flex items-center justify-center '/><h3 className='text-white font-extrabold text-xl'>Inicio</h3>
