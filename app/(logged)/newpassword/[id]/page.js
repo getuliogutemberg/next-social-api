@@ -1,19 +1,20 @@
 "use client"
 import { getDoc,updateDoc,doc } from 'firebase/firestore';
 import { useState } from 'react';
-import { db } from '../../firebase';
+import { db } from '../../../firebase';
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 import { BsKey } from 'react-icons/bs';
 
-export default function ChangePassword() {
-  const router = useRouter()
+export default function ChangePassword(params) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [user, setUser] = useState({
+
+  });
+  const [userEdit, setUserEdit] = useState({
 
   });
 
@@ -22,17 +23,26 @@ export default function ChangePassword() {
     const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
     // console.log(user.data());
     
-    setUser(user.data());
+    setUserEdit(user.data());
+  }
+
+  const getUserEdit = async () =>{
+    
+    const user = await getDoc(doc(db, "users", params.id));
+    // console.log(user.data());
+    
+    setUserEdit(user.data());
   }
 
   useEffect(() => {
+    getUserEdit()
     getUser()
   },[])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Lógica para validar a senha atual e atualizar a senha no banco de dados
-    const response = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))))
+    const response = await getDoc(doc(db, "users", params.id))
     
     if (currentPassword === response.data().password) {
       // Lógica para atualizar a senha no banco de dados
@@ -42,12 +52,6 @@ export default function ChangePassword() {
             password: newPassword,
             updated_at: new Date(),
           })
-
-          setError('Senha alterada com sucesso');
-          setTimeout(() => {
-            setError('');
-            router.back()
-          },3000);
       } else {
         setError('As senhas não coincidem');
         setTimeout(() => {
@@ -56,8 +60,8 @@ export default function ChangePassword() {
       }
       
     } else {
-      // console.log('Senha atual incorreta, currentPassword:' + currentPassword);
-      // console.log('Senha atual correta, response.data.password:' + response.data().password);
+      console.log('Senha atual incorreta, currentPassword:' + currentPassword);
+      console.log('Senha atual correta, response.data.password:' + response.data().password);
       setError('Senha atual incorreta');
       setTimeout(() => {
         setError('');
@@ -70,7 +74,7 @@ export default function ChangePassword() {
       <div className="w-full max-w-md p-4 bg-white rounded-md">
         <div className='flex flex-row items-center justify-center'>
     <BsKey className='text-[40px] text-purple-800 my-4' />
-        <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">Alterar Senha de {user.name}</h2>
+        <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">{user.name} alterando senha de {userEdit.name}</h2>
         </div>
         
         <form onSubmit={handleSubmit}>
@@ -81,6 +85,7 @@ export default function ChangePassword() {
               type="password"
               id="currentPassword"
               value={currentPassword}
+              disabled={true}
               onChange={(e) => setCurrentPassword(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
             />
