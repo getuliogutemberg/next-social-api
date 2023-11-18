@@ -1,4 +1,4 @@
-
+"use strict";
 import React from 'react'
 import { TbMessageShare } from 'react-icons/tb';
 import {TfiComments} from 'react-icons/tfi';
