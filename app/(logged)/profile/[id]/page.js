@@ -16,7 +16,7 @@ export default function Profile({params}) {
   })
 
   const getUserEdit = async () =>{
-    console.log(params)
+    // console.log(params)
     const userEdit = await getDoc(doc(db, "users", params.id));
     // console.log(user.data());
     
@@ -52,7 +52,7 @@ export default function Profile({params}) {
 
   const handleCheckboxChange = async(e) => {
     const { name, checked } = e.target;
-    console.log(checked)
+    // console.log(checked)
     setUserEdit({ ...userEdit, [name]: checked });
 
   }

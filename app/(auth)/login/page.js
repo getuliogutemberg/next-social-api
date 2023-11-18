@@ -35,62 +35,68 @@ export default function Login() {
     try {
       
       const { email, password } = formData;
-      console.log(email, password)
-  
-      // Autentica o usuário no Firebase Authentication
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  
-      // O usuário foi autenticado com sucesso
-      const user = userCredential.user;
-  
-      // Agora, você pode acessar as informações do usuário (por exemplo, UID)
-      const uid = user.uid;
-  
-      // Você pode também acessar outras informações disponíveis no objeto 'user'
-      // Consulte a documentação do Firebase para mais detalhes sobre as informações disponíveis.
-  
-      // Exemplo de como você pode armazenar informações no localStorage
-      localStorage.setItem("user", JSON.stringify({
-        uid: user.uid,
-        email: user.email,
-        // Outras informações do usuário, se necessário
-        name: user.displayName,
-        imageURL: user.photoURL,
-       
-      }));
-  
-      // Atualiza o status do usuário no Firestore (se necessário)
-      await updateDoc(doc(db, "users", user.uid), {
-        status: 'active',
-        updated_at: new Date(),
-      })
-  
-      setIsLoggedIn({
-        status: true,
-        message: "Login bem-sucedido!",
-      });
-  
-      console.log("Login bem-sucedido!");
-      setTimeout(() => {
-        router.push('/openview');
-      }, 1000);
-    } catch (error) {
-      // Tratar erros de autenticação
-      console.log("Erro ao fazer login:", error.code);
-  
+      
+      // Consulta a coleção de usuários
+    const usersQuery = query(collection(db, "users"), where("email", "==", email), limit(1));
+
+    // Obtém a coleção de documentos
+    const querySnapshot = await getDocs(usersQuery);
+
+      if (querySnapshot.empty) {
       setIsLoggedIn({
         status: false,
         message: 'Email ou senha inválido. Por favor, tente novamente.',
       });
-  
+
       setTimeout(() => {
         setIsLoggedIn({
           status: false,
           message: '',
         });
       }, 3000);
-    }
-  };
+
+      return;
+
+      }
+  
+      // Pega o primeiro documento da coleção
+    const userDoc = querySnapshot.docs[0];
+
+    localStorage.setItem("user_id", JSON.stringify(userDoc.id));
+
+    // Atualiza o status do usuário no Firestore (se necessário)
+    await updateDoc(doc(db, "users", userDoc.id), {
+      status: 'active',
+      updated_at: new Date(),
+    });
+
+    setIsLoggedIn({
+      status: true,
+      message: "Login bem-sucedido!",
+    });
+
+    console.log("Login bem-sucedido!");
+
+    setTimeout(() => {
+      router.push('/openview');
+    }, 1000);
+  } catch (error) {
+    // Tratar erros de autenticação
+    console.error("Erro ao fazer login:", error);
+
+    setIsLoggedIn({
+      status: false,
+      message: 'Email ou senha inválido. Por favor, tente novamente.',
+    });
+
+    setTimeout(() => {
+      setIsLoggedIn({
+        status: false,
+        message: '',
+      });
+    }, 3000);
+  }
+};
 
 
 

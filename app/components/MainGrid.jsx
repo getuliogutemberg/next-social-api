@@ -8,30 +8,38 @@ import { db } from '../firebase';
 
 const MainGrid = (props) => {
 
-    const router = useRouter();
-    const [user, setUser] = useState({
+  const router = useRouter();
+  const [user, setUser] = useState({
+  
+  });
+  const getUser = async () =>{
+    const user = await getDoc(doc(db, "users", localStorage.getItem('user_id')));
+    // console.log(user.data());
     
-    });
-    const getUser = async () =>{
-      const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id));
-      console.log(user.data());
-      
-      setUser(user.data());
-    }
+    setUser(user.data());
+  }
 
-    useEffect(() => {
-      getUser()
-    },[])
+  const virifyUserLevel = (user) => {
+  if (user !== undefined && user.level < props.level) {
+    router.push('/openview')
+    return false
+  } else {
+    return true
+  }
+  }
 
   useEffect(() => {
-    
-    user.level < props.level && router.push('/openview');
+    getUser()
+  },[])
+
+  useEffect(() => {
+    virifyUserLevel(user)
     
   },[user])
 
   return (
     <div className="bg-slate-900 text-gray-800 grid grid-cols-12 grid-rows-6 gap-4 h-[100vh] p-4  ">
-       {user.level >= props.level && props.children}
+       {virifyUserLevel(user) && props.children}
     </div>
   )
 }

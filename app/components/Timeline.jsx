@@ -1,8 +1,9 @@
+
 import React from 'react'
 import { TbMessageShare } from 'react-icons/tb';
 import {TfiComments} from 'react-icons/tfi';
 import {AiFillHeart,AiOutlineHeart} from 'react-icons/ai';
-import { updateDoc,doc,query,collection, onSnapshot} from 'firebase/firestore';
+import { updateDoc,doc,query,collection, onSnapshot,getDoc, where, limit} from 'firebase/firestore';
 import {db} from '../firebase';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -80,7 +81,9 @@ const Timeline = (props) => {
   return (
     <div className="col-span-10 row-span-5 col-start-1 row-start-1 rounded-lg text-center overflow-auto">
       <div className="text-2xl  mb-4 flex flex-1 items-center justify-between">
-        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">{props.level ? `Área restrita` : 'Lobby'}</h2><div><button id='expandbutton'  onClick={setFullscreen} className="bg-purple-800 text-white p-2 rounded-lg"><BiExpand className='text-[40px] text-white mx-4'/></button><button onClick={toggleIframe} className="bg-purple-800 text-white p-2 rounded-lg"><BiGame className='text-[40px]  mx-4'/></button></div></div>
+        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">{props.level ? `Área restrita` : 'Lobby'}</h2><div><button id='expandbutton'  onClick={setFullscreen} className="bg-purple-800 text-white p-2 rounded-lg"><BiExpand className='text-[40px] text-white mx-4'/></button>
+        {/* <button onClick={toggleIframe} className="bg-purple-800 text-white p-2 rounded-lg"><BiGame className='text-[40px]  mx-4'/></button> */}
+          </div></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
       
       <div className=' flex flex-col gap-4 items-center'>
@@ -102,12 +105,13 @@ const Timeline = (props) => {
   // Ajuste a ordem da subtração se desejar ordenar de outra forma
   return timeB - timeA;
 }).map((post)=>{
+       
         // if (post.level > props.level) {
-        if (post.level !== props.level) {
+        if (post.level !== props.level) { 
 
           return null;
         }
-        // console.log(posts);
+        
         return (
           <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md p-4 flex flex-col justify-between cursor-pointer mx-4 w-[95%] max-h-[600px]">
                 {post.created_at !== null && <span className="text-gray-800 text-center text-sm font-extralight  mx-4 mt-0">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm (zzzz)", {
@@ -116,11 +120,13 @@ const Timeline = (props) => {
             <div  onClick={() => router.push(`/postview/${post.id}`)} className='flex flex-row justify-between '>
             <div className='flex flex-col  max-[900px]:w-full  '> 
               <div className="flex justify-center items-center ml-4 max-[900px]:justify-between">
-                <img
-                  src={post.createdBy.imageURL}
-                  alt={post.createdBy.name}
-                  className="w-16 h-16 rounded-full"
-                />
+              <img
+                    src={post.createdBy.imageURL}
+                    alt={post.createdBy.name}
+                    className="w-16 h-16 rounded-full"
+                  />
+                    
+                  
                 <div className='flex flex-col ml-4 max-[900px]:w-full max-[900px]:items-center'>
                 <h2 className='text-3xl font-extrabold  text-left capitalize max-[900px]:text-xl'>{post.title}</h2>
                   <p className=" text-sm text-left">{post.createdBy.name}</p>

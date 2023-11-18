@@ -117,10 +117,11 @@ export default function Register() {
         formData.imageURL = 'https://trainengine.ai/_next/image?url=https%3A%2F%2Fdata.trainengine.io%2Foutputs%2Fimages%2F2f4igndbvj5m7odsqi5v6o7wmq.png&w=640&q=75';
         formData.admin = true;
         formData.level = 1;
+        formData.email = 'capybaquigrafo@admin.com';
       }
       try {
 
-        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        // const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
         // const user = userCredential.user;
         // console.log("User:", user.uid);
 
@@ -223,13 +224,13 @@ export default function Register() {
         <Link href="/login" className={`flex flex-1/2 gap-2 text-md my-4 text-gray-800`} >
           <FiUser /> Já tem uma conta? Faça login
         </Link>
-        <button
+        {/* <button
   type="button"
   onClick={handleGoogleLogin}
   className="w-full py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-500"
 >
   Entrar com o Google
-</button>
+</button> */}
       </div>
       <Link href="/" className={`flex items-center justify-center gap-2 text-2xl text-gray-300 hover:text-purple-800`} >
 <FiHome className='text-[40px] flex items-center justify-center '/><h3 className='text-white font-extrabold text-xl'>Inicio</h3>

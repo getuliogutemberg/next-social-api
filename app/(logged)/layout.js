@@ -25,14 +25,12 @@ export default function RootLayout({ children }) {
 
   const router = useRouter();
   const pathname = usePathname()
-  const [user, setUser] = useState({
-    
-  });
+  const [user, setUser] = useState();
   
   const [isNavOpen, setIsNavOpen] = useState(false);
 
   const getUser = async () =>{
-    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id));
+    const user = await getDoc(doc(db, "users", localStorage.getItem('user_id')));
     setUser(user.data());
   }
 
@@ -47,19 +45,16 @@ export default function RootLayout({ children }) {
   const logout = async () => {
 
     
-    await updateDoc(doc(db, "users", user.id), 
-    
-    {
+    if (user && user.id) {
+      await updateDoc(doc(db, "users", user.id), {
+        status: 'inactive',
+        updated_at: new Date(),
+      });
       
-      status: 'inactive',
-      updated_at: new Date(),
+      localStorage.removeItem('user_id')
+      
+      router.push('/')
     }
-
-    );
-
-    localStorage.removeItem('user')
-    
-    router.push('/')
 
     
 }
@@ -90,13 +85,13 @@ export default function RootLayout({ children }) {
             <div className='border-b-2 w-full  border-purple-500'/>
               <li className='my-2'>
                 <Link href="/openview" className={`text-white hover:text-purple-700 flex gap-2 my-0 transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ml-3' : 'justify-left pl-3 '} h-10 flex items-center  `}>
-                <TbMessageShare className={`transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'text-purple-700 scale-125'  } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Posts públicos</h3>}
+                <TbMessageShare className={`transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'text-purple-700 scale-125'  } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/openview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Lobby</h3>}
                 </Link>
               </li>
-              {user.level > 0 && <><div className='border-b-2 w-full border-purple-500'/>
+              {user !== undefined && user.level > 0 && <><div className='border-b-2 w-full border-purple-500'/>
               <li className='my-2'>
                 <Link href="/secretview" className={`text-white hover:text-purple-700 flex gap-2 my-0 transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ml-3' : 'justify-left pl-3 '} h-10 flex items-center `}>
-                <TbLockShare className={`transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'text-purple-700 scale-125' } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Posts Secretos</h3>}
+                <TbLockShare className={`transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'text-purple-700 scale-125' } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/secretview' && 'm-auto text-purple-700' }  transition-all ease-in-out duration-2000 hover:text-purple-700`}>Área restrita</h3>}
                 </Link>
               </li></>}
               
@@ -113,7 +108,7 @@ export default function RootLayout({ children }) {
                 <BsKey className={`transition-all ease-in-out duration-2000 ${pathname === '/newpassword' && 'text-purple-700 scale-125' } w-10 h-10`}/> {isNavOpen && <h3 className={` font-extrabold text-xl transition-all ease-in-out duration-2000 ${pathname === '/newpassword' && 'm-auto text-purple-700' } transition-all ease-in-out duration-2000 hover:text-purple-700 `}>Alterar Senha</h3>}
                 </Link>
               </li>
-              {user.admin === true && <><div className='border-b-2 w-full border-purple-500'/>
+              {user !== undefined && user.admin === true && <><div className='border-b-2 w-full border-purple-500'/>
               
               <li className='my-2'>
               <Link href="/admin"  className={`text-white hover:text-purple-700 flex gap-2 my-0 transition-all ease-in-out duration-2000${!isNavOpen ? 'justify-center ml-3' : 'justify-left pl-3'} h-10 flex items-center `}>

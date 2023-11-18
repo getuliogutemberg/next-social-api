@@ -9,12 +9,22 @@ export default function Profile() {
   const router = useRouter();
   const [save, setSave] = useState(false);
   const [user, setUser] = useState({
-    
-  });
 
+  });
+  const [userEdit, setUserEdit] = useState({
+    
+  })
+
+  const getUserEdit = async () =>{
+    // console.log(params)
+    const userEdit = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
+    // console.log(user.data());
+    
+    setUserEdit(userEdit.data());
+  }
   const getUser = async () =>{
-    console.log(JSON.parse(localStorage.getItem('user')).id)
-    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id));
+    
+    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
     // console.log(user.data());
     
     setUser(user.data());
@@ -22,6 +32,7 @@ export default function Profile() {
 
   useEffect(() => {
     getUser()
+    getUserEdit()
   },[])
 
   useEffect(() => {
@@ -31,39 +42,33 @@ export default function Profile() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
+    setUserEdit({ ...user, [name]: value });
   };
 
   const handleCheckboxChange = async(e) => {
     const { name, checked } = e.target;
-    setUser({ ...user, [name]: checked === 'on' ? true : false });
+    setUserEdit({ ...user, [name]: checked });
 
   }
 
   const handleSelectChange = async(e) => {
     const { name, value } = e.target;
-    setUser({ ...user, [name]: parseInt(value) });
+    setUserEdit({ ...user, [name]: parseInt(value) });
   }
   const handleSubmit = async(e) => {
     e.preventDefault();
     
-    await updateDoc(doc(db, "users", user.id),
+    await updateDoc(doc(db, "users", userEdit.id),
     {
-      name: user.name,
-      imageURL: user.imageURL,
-      email: user.email,
-      level: user.level,
-      admin: user.admin,
-      verified: user.verified,
+      name: userEdit.name,
+      imageURL: userEdit.imageURL,
+      email: userEdit.email,
+      level: userEdit.level,
+      admin: userEdit.admin,
+      verified: userEdit.verified,
       updated_at: new Date(),
       
     })
-
-    const response = await getDoc(doc(db, "users", user.id))
-
-    const {password, ...newUser} = response.data()
-
-    localStorage.setItem('user', JSON.stringify(newUser))
 
     
     router.refresh()
@@ -86,11 +91,11 @@ export default function Profile() {
         <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">Editar Perfil</h2>
         </div>
         
-        <form onSubmit={handleSubmit} className="flex flex-col items-start justify-center">
+        {userEdit !== undefined && <form onSubmit={handleSubmit} className="flex flex-col items-start justify-center">
         <div className="flex flex-row max-[500px]:flex-col max-[500px]:w-full" >
         <div className="flex flex-col items-center justify-center">
         <img
-          src={user.imageURL}
+          src={userEdit.imageURL}
           alt="Profile"
           className="w-[300px] rounded"
         />
@@ -103,7 +108,7 @@ export default function Profile() {
               type="text"
               id="name"
               name="name"
-              defaultValue={user.name}
+              defaultValue={userEdit.name}
               onChange={handleInputChange}
               className="w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer"
             />
@@ -113,34 +118,35 @@ export default function Profile() {
               id="email"
               name="email"
               disabled={user.admin ? false : user.level === 1 ? false : true}
-              defaultValue={user.email}
+              defaultValue={userEdit.email}
               onChange={handleInputChange}
-              className={`w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${user.admin ? false : user.level === 1 ? '' : 'opacity-50 '}`}
+              className={`w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${userEdit.admin ? false : userEdit.level === 1 ? '' : 'opacity-50 '}`}
             />
             <div className="flex items-center justify-start px-3 gap-4  py-1">
-            <label htmlFor="admin" className={`text-gray-600 ${user.admin ? false : user.level === 1 ? '' : 'opacity-50 '}`}>Autorização</label>
+            <label htmlFor="admin" className={`text-gray-600 ${userEdit.admin ? false : userEdit.level === 1 ? '' : 'opacity-50 '}`}>Autorização</label>
             <select
               type="selector"
               id="level"
               name="level"
-              disabled={user.admin ? false : user.level === 1 ? false : true}
+              disabled={userEdit.admin ? false : userEdit.level === 1 ? false : true}
               // defaultValue={0}
               onChange={handleSelectChange}
-              className={`w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${user.admin ? false : user.level === 1 ? '' : 'opacity-50 '}`}
+              className={`w-full px-3 py-1 border-b rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${userEdit.admin ? false : userEdit.level === 1 ? '' : 'opacity-50 '}`}
             >
-              {user.level === 0 ? <><option value={0} selected >Limitada</option> <option value={1} >Ilimitada</option> </> : <><option value={0}  >Limitada</option> <option value={1} selected>Ilimitada</option></>}
+              {userEdit.level === 0 ? <><option value={0} selected >Limitada</option> <option value={1} >Ilimitada</option> </> : <><option value={0}  >Limitada</option> <option value={1} selected>Ilimitada</option></>}
               
               
             </select>
             </div>
 
  <div className="flex items-center justify-start px-3 gap-4  py-1">
- <label htmlFor="admin" className={` text-gray-600 ${user.admin ? '' : 'opacity-50 '}`}>Administrador</label><input
+ <label htmlFor="admin" className={` text-gray-600 ${user.admin ? '' : 'opacity-50 '}`}>Administrador</label>
+            <input
               type="checkbox"
               id="admin"
               name="admin"
               disabled={user.admin ? false : true}
-              checked={user.admin ? true : false}
+              checked={userEdit.admin ? 'on' : ''}
               onChange={handleCheckboxChange}
               className={` rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-slate-600 cursor-pointer ${user.admin ? '' : 'opacity-50 '}`}
             />
@@ -165,7 +171,7 @@ export default function Profile() {
           >
             Salvar Alterações
           </button>
-        </form>
+        </form>}
         {save && <span className='text-red-400 font-extrabold '>Registrando alterações...</span>}
       </div>
 

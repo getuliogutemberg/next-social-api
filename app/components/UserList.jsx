@@ -19,7 +19,7 @@ const UserList = (props) => {
         })
       }, [])
     const compareUsers = (userA, userB) => {
-        const loggedUserId = JSON.parse(localStorage.getItem('user')).id;
+        const loggedUserId = localStorage.getItem('user_id');
       
         // Verifica se o usuário logado é igual a userA ou userB
         const isUserALoggedIn = userA.id === loggedUserId;
@@ -59,9 +59,9 @@ const UserList = (props) => {
       if (user.level < props.level) {
         return null;
       }
-      console.log(user)
+      // console.log(user)
 return (
-      <div key={user.email} className={`flex  px-0 mb-4 mx-4 max-[900px]:mx-1 max-[900px]:mt-1   max-[900px]:mb-1 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' && JSON.parse(localStorage.getItem('user')).id !== user.id ? 'cursor-pointer' : 'cursor-not-allowed'} ${JSON.parse(localStorage.getItem('user')).id === user.id ? 'border-purple-500 border-2' : ''}`} onClick={user.status === 'active'&& JSON.parse(localStorage.getItem('user')).id !== user.id ? () => router.push(`/pvp/${user.email}`) : null} >
+      <div key={user.email} className={`flex  px-0 mb-4 mx-4 max-[900px]:mx-1 max-[900px]:mt-1   max-[900px]:mb-1 ${user.status === 'active' ? 'bg-white ' : 'bg-gray-300 opacity-40'} hover:bg-purple-300 rounded-lg overflow-hidden shadow-md ${user.status === 'active' && localStorage.getItem('user_id') !== user.id ? 'cursor-pointer' : 'cursor-not-allowed'} ${localStorage.getItem('user_id') === user.id ? 'border-purple-500 border-2' : ''}`} onClick={user.status === 'active'&& localStorage.getItem('user_id') !== user.id ? () => router.push(`/pvp/${user.email}`) : null} >
         <div className="w-2/3  text-end max-[1400px]:collapse">
           <h2 className="text-xl font-bold mb-0 max-[1400px]:collapse">{user.name}</h2>
           <p className="text-gray-600 mb-0 text-sm max-[1400px]:collapse">{user.email}</p>
