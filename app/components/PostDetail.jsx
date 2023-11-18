@@ -297,7 +297,9 @@ const PostDetail = (props) => {
             
             </div>
         )
-      }).reverse()}
+      })
+      // .reverse()
+      }
 
       
 
