@@ -3,11 +3,13 @@ import { getDoc,updateDoc,doc } from 'firebase/firestore';
 import { useState } from 'react';
 import { db } from '../../../firebase';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { BsKey } from 'react-icons/bs';
 
-export default function ChangePassword(params) {
-  const [currentPassword, setCurrentPassword] = useState('');
+export default function ChangePassword({params}) {
+  const router = useRouter()
+  // const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -23,7 +25,7 @@ export default function ChangePassword(params) {
     const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
     // console.log(user.data());
     
-    setUserEdit(user.data());
+    setUser(user.data());
   }
 
   const getUserEdit = async () =>{
@@ -42,31 +44,23 @@ export default function ChangePassword(params) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Lógica para validar a senha atual e atualizar a senha no banco de dados
-    const response = await getDoc(doc(db, "users", params.id))
+
     
-    if (currentPassword === response.data().password) {
+    
       // Lógica para atualizar a senha no banco de dados
       if (newPassword === confirmPassword && newPassword !== '') {
-        await updateDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))),
+        await updateDoc(doc(db, "users", params.id),
           {
             password: newPassword,
             updated_at: new Date(),
           })
+        router.back()
       } else {
         setError('As senhas não coincidem');
         setTimeout(() => {
           setError('');
         }, 3000);
       }
-      
-    } else {
-      console.log('Senha atual incorreta, currentPassword:' + currentPassword);
-      console.log('Senha atual correta, response.data.password:' + response.data().password);
-      setError('Senha atual incorreta');
-      setTimeout(() => {
-        setError('');
-      }, 3000);
-    }
   };
 
   return (
@@ -80,15 +74,9 @@ export default function ChangePassword(params) {
         <form onSubmit={handleSubmit}>
         
           <div className="mb-4">
-            <label htmlFor="currentPassword" className="block text-gray-600">Senha Atual:</label>
-            <input
-              type="password"
-              id="currentPassword"
-              value={currentPassword}
-              disabled={true}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-purple-900 text-gray-900"
-            />
+            <label className="block text-gray-600">Email atual: {userEdit.email}</label>
+            <label  className="block text-gray-600">Senha atual: {userEdit.password}</label>
+           
           </div>
           <div className="mb-4">
             <label htmlFor="newPassword" className="block text-gray-600">Nova Senha:</label>

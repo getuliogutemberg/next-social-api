@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {FiSettings} from 'react-icons/fi'
-import { doc, getDoc , collection, onSnapshot, query} from 'firebase/firestore';
+import { doc, getDoc , collection, onSnapshot, query,deleteDoc} from 'firebase/firestore';
 import { db } from '../../firebase';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -15,8 +15,8 @@ export default function Admin() {
     
   });
   const getUser = async () =>{
-    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id));
-    // console.log(user.data());
+    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
+    console.log(user.data());
     
     setUser(user.data());
   }
@@ -59,7 +59,7 @@ export default function Admin() {
   return (
     <div className="bg-slate-900 text-gray-800 grid grid-cols-5 grid-rows-5 gap-4 h-full p-4 ">
      
-    {user.admin === true && <div className="col-span-6 row-span-6">
+    {user !== undefined && user.admin === true && <div className="col-span-6 row-span-6">
         <div className="bg-white rounded-lg shadow-md text-center h-full p-4 gap-4 flex flex-col">
           <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center">
             <FiSettings className='text-[40px] text-purple-800 mx-4'/>Configurações
@@ -72,15 +72,41 @@ export default function Admin() {
                 <th className="text-left font-medium p-2 border">Email</th>
                 <th className="text-left font-medium p-2 border" >Status</th>
                 <th className="text-left font-medium p-2 border">Permissão</th>
+                <th className="text-left font-medium p-2 border w-[300px]">Edição</th>
+
               </tr>
             </thead>
             <tbody>
               {usersRegistred.map((user)=>(
-                <tr key={user.id} className='border hover:bg-slate-300 cursor-pointer' onClick={() => router.push(`/profile/${user.id}`)}>
+                <tr key={user.id} className='border hover:bg-slate-300 ' >
                   <td className="p-2">{user.name}</td>
                   <td className="p-2">{user.email}</td>
                   <td className="p-2">{user.status}</td>
                   <td className="p-2">{user.admin ? 'Admin' : 'User'}</td>
+                  <td className="p-2 flex gap-2 justify-end">
+                    <button
+                      onClick={() => router.push(`/profile/${user.id}`)}
+                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Editar Cadastro
+                    </button>
+                    <button
+                      onClick={() => router.push(`/newpassword/${user.id}`)}
+                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Editar Senha
+                    </button>
+                    <button
+                      onClick={async()=>{
+                        await deleteDoc(doc(db, 'users', user.id))
+
+                      }}
+                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Deletar
+                    </button>
+                    
+                  </td>
                 </tr>
               ))}
               
@@ -96,12 +122,13 @@ export default function Admin() {
                 <th className="text-left font-medium p-2 border">N° Comentários</th>
                 <th className="text-left font-medium p-2 border">N° Likes</th>
                 <th className="text-left font-medium p-2 border">Autor</th>
-                
+                <th className="text-left font-medium p-2 border w-[300px]">Edição</th>
+
               </tr>
             </thead>
             <tbody>
               {posts.map((post)=>(
-                <tr key={post.id} className='border hover:bg-slate-300 cursor-pointer'>
+                <tr key={post.id} className='border hover:bg-slate-300'>
                   <td className="p-2">{post.title}</td>
                   <td className="p-2">{format(post.created_at.toDate(), "EEEE, d 'de' MMMM - HH:mm 'h'", {
                 locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
@@ -110,6 +137,15 @@ export default function Admin() {
                   <td className="p-2">{post.comments.length}</td>
                   <td className="p-2">{post.likes.length}</td>
                   <td className="p-2">{post.createdBy.name}</td>
+                  <td className="p-2 flex gap-2 justify-end">
+                    <button
+                      onClick={() => router.push(`/post/${post.id}`)}
+                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Editar Post
+                    </button>
+                    
+                  </td>
                 </tr>
               ))}
               

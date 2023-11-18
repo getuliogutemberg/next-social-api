@@ -37,7 +37,7 @@ export default function Login() {
       const { email, password } = formData;
       
       // Consulta a coleção de usuários
-    const usersQuery = query(collection(db, "users"), where("email", "==", email), limit(1));
+    const usersQuery = query(collection(db, "users"), where("email", "==", email),where("password", "==", password), limit(1));
 
     // Obtém a coleção de documentos
     const querySnapshot = await getDocs(usersQuery);

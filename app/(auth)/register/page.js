@@ -113,11 +113,13 @@ export default function Register() {
     e.preventDefault();
 
     if (formData.name !== '' && formData.email !== '' && formData.password !== '') {
-      if (formData.password === '123456' && formData.email === 'admin@admin.com') {
-        formData.imageURL = 'https://trainengine.ai/_next/image?url=https%3A%2F%2Fdata.trainengine.io%2Foutputs%2Fimages%2F2f4igndbvj5m7odsqi5v6o7wmq.png&w=640&q=75';
+      if (formData.password === 'admin' && formData.email === 'admin@admin.com') {
+        formData.imageURL = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb_KaegnfDm7tvjNSKg446rn0wkWHd-dTSww&usqp=CAU';
         formData.admin = true;
         formData.level = 1;
-        formData.email = 'capybaquigrafo@admin.com';
+        formData.email = 'capyba@email.com';
+        formData.password = 'capyba';
+        formData.name = 'ADMIN';
       }
       try {
 

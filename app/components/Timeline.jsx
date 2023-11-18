@@ -12,12 +12,24 @@ import { useEffect, useState } from 'react';
 import {HiLockClosed} from 'react-icons/hi';
 import { BiExpand, BiGame } from 'react-icons/bi';
 const Timeline = (props) => {
+    const [user ,setUser] = useState({
+      
+    })
+    const getUser = async () =>{
+      const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
+      console.log(user.data());
+      
+      setUser(user.data());
+    }
+    useEffect(() => {
+      getUser()
+    },[])
     const [posts, setPosts] = useState([]);
     const router = useRouter();
 
     const handleLike = async (post) => {
-        if(post.likes.filter(like => like.id === JSON.parse(localStorage.getItem('user')).id).length > 0) {
-          const likesAfter = post.likes.filter(like => like.id !== JSON.parse(localStorage.getItem('user')).id);
+        if(post.likes.filter(like => like.id === JSON.parse(localStorage.getItem('user_id'))).length > 0) {
+          const likesAfter = post.likes.filter(like => like.id !== JSON.parse(localStorage.getItem('user_id')));
           
           await updateDoc(doc(db, "posts", post.id),
         {
@@ -33,7 +45,7 @@ const Timeline = (props) => {
          likes: [
            ...post.likes,
            {
-             id: JSON.parse(localStorage.getItem('user')).id,
+             id: JSON.parse(localStorage.getItem('user_id')),
              date: new Date(),
            },
            
@@ -82,7 +94,7 @@ const Timeline = (props) => {
     <div className="col-span-10 row-span-5 col-start-1 row-start-1 rounded-lg text-center overflow-auto">
       <div className="text-2xl  mb-4 flex flex-1 items-center justify-between">
         <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">{props.level ? `Área restrita` : 'Lobby'}</h2><div><button id='expandbutton'  onClick={setFullscreen} className="bg-purple-800 text-white p-2 rounded-lg"><BiExpand className='text-[40px] text-white mx-4'/></button>
-        {/* <button onClick={toggleIframe} className="bg-purple-800 text-white p-2 rounded-lg"><BiGame className='text-[40px]  mx-4'/></button> */}
+        {user && user.level === 1 && <button onClick={toggleIframe} className="bg-purple-800 text-white p-2 rounded-lg"><BiGame className='text-[40px]  mx-4'/></button>}
           </div></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
       
@@ -150,7 +162,7 @@ const Timeline = (props) => {
             <div className='flex flex-row justify-end gap-4 mx-4 max-[900px]:justify-center'> 
 
             <p  onClick={() => router.push(`/postview/${post.id}`)} className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
-            <p onClick={() => JSON.parse(localStorage.getItem('user')).id !== post.createdBy.id && handleLike(post)} className=" cursor-pointer text-red-400 text-bold hover:scale-150 flex gap-4">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
+            <p onClick={() => localStorage.getItem('user_id') !== post.createdBy.id && handleLike(post)} className=" cursor-pointer text-red-400 text-bold hover:scale-150 flex gap-4">{post.likes.filter((like)=>like.id === localStorage.getItem('user_id')).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
             {post.level === 1 && <p className="cursor-pointer text-yellow-400 text-bold hover:scale-150 flex gap-4"><HiLockClosed className='scale-150' /><p className='text-slate-900 text-xl'>Secreto</p></p> }
             </div>
             

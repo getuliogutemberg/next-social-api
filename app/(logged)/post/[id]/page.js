@@ -6,20 +6,18 @@ import { TbMessageShare } from 'react-icons/tb';
 import { SyncLoader } from 'react-spinners';
 
 import UserList from '@/app/components/UserList';
-import PostDetail from '@/app/components/PostDetail';
-import PostDetailGrid from '@/app/components/PostDetailGrid';
+import PostEdit from '@/app/components/PostEdit';
+import PostEditGrid from '@/app/components/PostEditGrid';
 
 export default function Postview({ params }) {
-  const [level, setLevel] = useState(0);
+ 
 
   return (
     
-    <PostDetailGrid>
-    
-    <PostDetail id={params.post} setLevel={setLevel}/>
-    
-    <UserList level={level} />
-  
-    </PostDetailGrid>
+    <PostEditGrid>
+
+    <PostEdit id={params.id}/>
+     
+    </PostEditGrid>
   );
 }

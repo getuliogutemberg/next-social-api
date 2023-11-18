@@ -25,7 +25,7 @@ export default function Profile({params}) {
 
   const getUser = async () =>{
     
-    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user')).id));
+    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
     // console.log(user.data());
     
     setUser(user.data());

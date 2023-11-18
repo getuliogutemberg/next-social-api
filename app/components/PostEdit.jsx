@@ -13,23 +13,12 @@ import { getDoc, query, querySnapshot,collection, getDocs,onSnapshot ,addDoc ,up
 import {db} from '../firebase';
 
 
-const PostDetail = (props) => {
+const PostEdit = (props) => {
 
   const router = useRouter();
     const [user ,setUser] = useState({
 
     })
-    const getUser = async () =>{
-      const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
-      console.log(user.data());
-      
-      setUser(user.data());
-    }
-    
-    useEffect(() => {
-      getUser()
-    },[])
-
     const [posts, setPosts] = useState([]);
     const [comment, setComment] = useState('');
     const [postOpened, setPostOpened] = useState({
@@ -97,7 +86,8 @@ const PostDetail = (props) => {
         }
     
         try{
-    
+          
+          const { password, ...userWihtoutPassword } = user
         
         await updateDoc(doc(db, "posts", props.id),
         {
@@ -105,7 +95,7 @@ const PostDetail = (props) => {
            ...postOpened.comments,
            {
              comment: comment,
-             user: user,
+             user: userWihtoutPassword,
              image: user.imageURL,
              date: new Date(),
              likes: [{
@@ -151,20 +141,28 @@ const PostDetail = (props) => {
       useEffect(() => {
         posts.filter((post) => post.id === props.id).map((post) => {
           setPostOpened(post);
-          props.setLevel(post.level);
+          
         }
         )
       }, [posts]);
     
+      const getUser = async () =>{
+        const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
+        console.log(user.data());
+        
+        setUser(user.data());
+      }
 
-
+useEffect(() => {
+  getUser()
+},[])
       
 
   return (
     <div className="col-span-10 row-span-6   rounded-lg text-center overflow-auto max-h-[100vh]">
       
       <div className="text-2xl  mb-4 flex flex-1 items-center justify-start">
-        <Link href={postOpened.level ? '/secretview' : '/openview'} className="text-white"><IoArrowBack className="text-white"/></Link> <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">   {postOpened.level ? <span className='text-red-400'>Privado</span> : <span className='text-white'>Público</span>}</h2></div>
+        <Link href={postOpened.level ? '/secretview' : '/openview'} className="text-white"><IoArrowBack className="text-white"/></Link> <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">   {postOpened.level ? <span className='text-red-400'>Edição de Post restrito</span> : <span className='text-white'>Edição de Post</span>}</h2></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
 
       <div className=' flex flex-col items-start '>
@@ -258,42 +256,7 @@ const PostDetail = (props) => {
 
           </div>
 
-          {/* {posts.filter((post) => post.id !== props.id  ) && <div className="flex flex-col gap-4   overflow-auto overflow-x-hidden rounded min-w-[300px] mb-4 max-[900px]:hidden ">
-          {posts.filter((post) => {
-            return post.id !== props.id
-          }).map((post)=>{
-             if (postOpened.level !== post.level) {
-              return null;
-            }
-        return (
-          <div key={post.id} className="bg-gray-100 rounded-lg hover:scale-105 hover:transition-all hover:duration-10 shadow-md  flex flex-col justify-center items-center cursor-pointer w-[300px] min-h-[300px]" onClick={() => router.push(`/postview/${post.id}`)}>
           
-             
-            <img
-                src={post.image}
-                alt={" "}
-                className="rounded object-cover  w-[300px] h-[270px]  p-4   hover:transition-all hover:duration-300 "
-              />
-             
-        
-             
-      <div className='flex flex-row gap-4'> 
-      <p className="text-purple-800 text-bold hover:scale-150 flex gap-4"><TfiComments  className='scale-150' /><p className='text-slate-900 text-xl'>{post.comments.length}</p></p>
-            <p  className="text-red-400 text-bold hover:scale-150 flex gap-4 cursor-pointer">{post.likes.filter((like)=>like.id === JSON.parse(localStorage.getItem('user')).id).length > 0 ? <AiFillHeart className='scale-150'/> : post.likes.length !== 0 ? <AiFillHeart  className='scale-150'/> : <AiOutlineHeart  className='scale-150'/>}<p className='text-slate-900 text-xl'>{post.likes.length}</p></p>
-            {post.level === 1 && <p className="cursor-pointer text-yellow-400 text-bold hover:scale-150 flex gap-4"><HiLockClosed className='scale-150' /></p> }
-
-            </div>
-    
-      
-
-            
-
-            
-
-          </div>
-        )
-      }).reverse()}
-            </div>} */}
             </div>
         )
       }).reverse()}
@@ -346,4 +309,4 @@ const PostDetail = (props) => {
   )
 }
 
-export default PostDetail
+export default PostEdit
