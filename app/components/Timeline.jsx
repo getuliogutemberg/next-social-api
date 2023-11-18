@@ -1,4 +1,3 @@
-"use strict";
 import React from 'react'
 import { TbMessageShare } from 'react-icons/tb';
 import {TfiComments} from 'react-icons/tfi';
@@ -64,50 +63,51 @@ const Timeline = (props) => {
     
           setPosts(posts);
         })
-        toggleIframe();
+        // toggleIframe();
       }, [])
 
-      function toggleFullscreen(e) {
-        if (!document.fullscreenElement) {
-          e.requestFullscreen().catch(err => {
-            console.error(`Erro ao tentar entrar em modo de tela cheia: ${err.message}`);
-          });
-        } else {
-          document.exitFullscreen();
-        }
-      }
+      // function toggleFullscreen(e) {
+      //   if (!document.fullscreenElement) {
+      //     e.requestFullscreen().catch(err => {
+      //       console.error(`Erro ao tentar entrar em modo de tela cheia: ${err.message}`);
+      //     });
+      //   } else {
+      //     document.exitFullscreen();
+      //   }
+      // }
       
-      const iframe = document.getElementById('fullscreenIframe');
+      // const iframe = document.getElementById('fullscreenIframe');
 
-      const setFullscreen = () => {
-        toggleFullscreen(iframe)
-      }
+      // const setFullscreen = () => {
+      //   toggleFullscreen(iframe)
+      // }
 
-      function toggleIframe() {
-        const minigame = document.getElementById('miniGame');
-        minigame.style.display = (minigame.style.display === 'none' || minigame.style.display === '') ? 'flex' : 'none';
-        const expandbutton = document.getElementById('expandbutton');
-        expandbutton.style.visibility = (minigame.style.display === 'none' || minigame.style.display === '') ? 'hidden' : 'visible';
-      }
+      // function toggleIframe() {
+      //   const minigame = document.getElementById('miniGame');
+      //   minigame.style.display = (minigame.style.display === 'none' || minigame.style.display === '') ? 'flex' : 'none';
+      //   const expandbutton = document.getElementById('expandbutton');
+      //   expandbutton.style.visibility = (minigame.style.display === 'none' || minigame.style.display === '') ? 'hidden' : 'visible';
+      // }
 
   return (
     <div className="col-span-10 row-span-5 col-start-1 row-start-1 rounded-lg text-center overflow-auto">
       <div className="text-2xl  mb-4 flex flex-1 items-center justify-between">
-        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">{props.level ? `Área restrita` : 'Lobby'}</h2><div><button id='expandbutton'  onClick={setFullscreen} className="bg-purple-800 text-white p-2 rounded-lg"><BiExpand className='text-[40px] text-white mx-4'/></button>
-        {user && user.level === 1 && <button onClick={toggleIframe} className="bg-purple-800 text-white p-2 rounded-lg"><BiGame className='text-[40px]  mx-4'/></button>}
+        <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">{props.level ? `Área restrita` : 'Lobby'}</h2><div>
+          {/* <button id='expandbutton'  onClick={setFullscreen} className="bg-purple-800 text-white p-2 rounded-lg"><BiExpand className='text-[40px] text-white mx-4'/></button>
+        {user && user.level === 1 && <button onClick={toggleIframe} className="bg-purple-800 text-white p-2 rounded-lg"><BiGame className='text-[40px]  mx-4'/></button>} */}
           </div></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
       
       <div className=' flex flex-col gap-4 items-center'>
 
 
-      <div id='miniGame'  className="flex flex-row gap-4 items-center min-w-full"> 
+      {/* <div id='miniGame'  className="flex flex-row gap-4 items-center min-w-full"> 
       <div   className='bg-white w-full h-[550px] rounded-lg'>
 
       </div>
       <iframe  id="fullscreenIframe" src="https://www.webliero.com/?v=20&c=Vm9u3vi0MLI" className="min-w-[960px] h-[550px] rounded-lg  scale-120 origin-top top-0"></iframe>
 
-      </div>
+      </div> */}
      
       
       {posts.length > 0 && posts.sort((a, b) => {
