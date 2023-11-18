@@ -294,6 +294,7 @@ const PostDetail = (props) => {
         )
       }).reverse()}
             </div>} */}
+            
             </div>
         )
       }).reverse()}
