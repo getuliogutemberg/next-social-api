@@ -269,28 +269,43 @@ const PostDetail = (props) => {
                     (
                       <div className="flex flex-col justify-center items-end gap-2">
                     <div className="flex flex-row justify-center items-center gap-2 ">
+                   <div className='flex flex-col justify-center items-end  '>
                       <div className='flex flex-row  '>
-                    <p className="text-gray-800  text-start text-sm  bg-white rounded-lg rounded-tr-none p-2 italic capitalize">{comment.comment}</p>
-                      <div className="border-[7px] border-r-transparent border-b-transparent border-white w-[7px] h-[7px]" />
+                        <div>
                     </div>
-                    <p className="font-extralight text-md">{comment.user.name}</p>
-                        <img src={comment.image} alt="" className="w-10 h-10 rounded-full" />
-                   
+                    <p className="text-gray-800  text-start text-sm  bg-white rounded-lg rounded-tr-none p-2 italic capitalize  max-w-[700px]">{comment.comment}</p>
+                      <div className="border-[7px] border-r-transparent border-b-transparent border-white w-[7px] h-[7px]" />
                     </div>
                     <span className="text-gray-800  text-xs font-extralight">{format(comment.date.toDate(), "HH:mm - d 'de' MMMM ", {
                       locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
                     })}</span>
+                    </div>
+                    <div className="w-16 h-16 m-2">
+                        <img src={comment.image} alt="" className=" rounded-full" />
+                    <p className="font-extralight text-md">{comment.user.name}</p>
+                        </div>
+                    </div>
                     </div>) : (
                     <div className="flex flex-col justify-center items-start gap-2">
                     <div className="flex flex-row justify-center items-center gap-2">
-                    <img src={comment.image} alt="" className="w-10 h-10 rounded-full" />
+                      <div className="w-16 h-16 m-2">
+                    <img src={comment.image} alt="" className="rounded-full" />
                     <p className="font-extralight text-md">{comment.user.name}</p>
-                    <p className="text-gray-800 text-start text-sm  bg-white rounded p-2 italic capitalize ">{comment.comment}</p>
-                   
                     </div>
+                    <div className='flex flex-row justify-center items-end'>
+                    <div>
+                      <div className='flex flex-row justify-start items-end'>
+                    <div className="border-[7px] border-l-transparent border-t-transparent border-white w-[7px] h-[7px] m-0" />
+                      <p className="text-gray-800 text-start text-sm  bg-white rounded p-2 italic capitalize max-w-[700px] ">{comment.comment}</p>
+                      </div>
                     <span className="text-gray-800   text-xs font-extralight">{format(comment.date.toDate(), "HH:mm - d 'de' MMMM ", {
                         locale: ptBR, // Você também precisa importar a localização desejada, como 'pt-BR'
                       })}</span>
+                    </div>
+                    
+                    </div>
+                    </div>
+                   
                     </div>)}
                   
                   </div>
