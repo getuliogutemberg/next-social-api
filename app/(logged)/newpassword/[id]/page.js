@@ -67,7 +67,7 @@ export default function ChangePassword({params}) {
     <div className="min-h-screen flex items-center justify-around bg-slate-900">
       <div className="w-full max-w-md p-4 bg-white rounded-md">
         <div className='flex flex-row items-center justify-center'>
-    <BsKey className='text-[40px] text-purple-800 my-4' />
+    <BsKey className='text-[40px] text-green-600 my-4' />
         <h2 className="text-2xl font-extrabold text-gray-800 text-center ml-4">{user.name} alterando senha de {userEdit.name}</h2>
         </div>
         
@@ -100,7 +100,7 @@ export default function ChangePassword({params}) {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900"
+            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-purple-900"
           >
             Alterar Senha
           </button>

@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import { useState } from 'react';
-import { addDoc ,updateDoc,doc,query, collection, onSnapshot} from 'firebase/firestore';
+import { addDoc ,updateDoc,doc,query, collection, onSnapshot,getDoc} from 'firebase/firestore';
 import {db} from '../firebase';
 const ActionBar = (props) => {
     const [title, setTitle] = useState('');
@@ -25,8 +25,8 @@ const ActionBar = (props) => {
       }, 3000);
       return;
     }
-    
-    const userData = JSON.parse(localStorage.getItem('user'));
+    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id')))); 
+    const userData = user.data();
     const {verified,status,deleted_at,updated_at,created_at,...creator } = userData;
   
 

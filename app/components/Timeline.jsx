@@ -16,7 +16,7 @@ const Timeline = (props) => {
     })
     const getUser = async () =>{
       const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
-      console.log(user.data());
+      // console.log(user.data());
       
       setUser(user.data());
     }

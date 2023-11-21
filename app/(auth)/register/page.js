@@ -34,51 +34,13 @@ export default function Register() {
     error: null,
   });
 
-  // useEffect(() => {
-  //   console.log(router)
-  // },[])
-
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   console.log('Dados do formulário:', formData);
-   
-  //    try { 
-  //     const response = await axios.post('http://localhost:5000/api/register', formData);  // Faz a solicitação ao backend
-  //     console.log('Resposta do servidor:', response.data.message);
-  //     console.log('Resposta do servidor:', response.data.user);
-  //     // Lógica adicional de redirecionamento ou feedback ao usuário
-  //     localStorage.setItem('authToken', response.data.authToken);
-  //     localStorage.setItem('user', JSON.stringify(response.data.user));
-  //     // Registro bem-sucedido
-  //     setRegistrationStatus({ success: true, error: null });
-      
-  //     // Redirecionar para a página desejada (por exemplo, a página de login)
-  //     router.push('/openview');
-
-
-  //   } catch (error) {
-  //     console.log('Erro na solicitação:', error.response.data.message);
-  //     console.log('Usuario:', error.response.data.user);
-
-  //      // Registro falhou
-  //      setRegistrationStatus({ success: false, error: 'Erro ao registrar.' + error.response.data.message });
-
-  //      setTimeout(() => {
-  //       setRegistrationStatus({ success: false, error: null });
-  //      }, 5000);
-  //   }
-    
-  // };
-
-  // add new user to firebase
-
+  
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -176,7 +138,7 @@ export default function Register() {
       
       <div className="w-full max-w-md p-4 bg-white rounded-md">
         <div className="flex flex-row items-center justify-center">
-        <FiUserPlus className='text-[40px] text-purple-800 my-4 ' />
+        <FiUserPlus className='text-[40px] text-green-600 my-4 ' />
       <h2 className="text-3xl font-extrabold text-gray-900 text-center ml-[20px] "> Registro</h2>
         </div>
         <form onSubmit={handleSubmit}>
@@ -216,7 +178,7 @@ export default function Register() {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 "
+            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-purple-900 "
           >
             Registrar
           </button>
@@ -234,7 +196,7 @@ export default function Register() {
   Entrar com o Google
 </button> */}
       </div>
-      <Link href="/" className={`flex items-center justify-center gap-2 text-2xl text-gray-300 hover:text-purple-800`} >
+      <Link href="/" className={`flex items-center justify-center gap-2 text-2xl text-gray-300 hover:text-green-600`} >
 <FiHome className='text-[40px] flex items-center justify-center '/><h3 className='text-white font-extrabold text-xl'>Inicio</h3>
       </Link>
     </div>

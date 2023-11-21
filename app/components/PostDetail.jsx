@@ -7,29 +7,34 @@ import { ptBR } from 'date-fns/locale';
 import {IoArrowBack} from 'react-icons/io5';
 import {HiLockClosed} from 'react-icons/hi';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState,useRef } from 'react';
 import { TbMessageShare } from 'react-icons/tb';
-import { getDoc, query, querySnapshot,collection, getDocs,onSnapshot ,addDoc ,updateDoc,doc} from 'firebase/firestore';
+
+import { getDoc, query,collection,onSnapshot  ,updateDoc,doc} from 'firebase/firestore';
 import {db} from '../firebase';
 
 
 const PostDetail = (props) => {
 
+  const commentsContainerRef = useRef(null);
+  
+  
+  
   const router = useRouter();
-    const [user ,setUser] = useState({
-
-    })
-    const getUser = async () =>{
-      const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
-      console.log(user.data());
-      
-      setUser(user.data());
-    }
+  const [user ,setUser] = useState({
+    
+  })
+  const getUser = async () =>{
+    const user = await getDoc(doc(db, "users", JSON.parse(localStorage.getItem('user_id'))));
+    console.log(user.data());
+    
+    setUser(user.data());
+  }
     
     useEffect(() => {
       getUser()
     },[])
-
+    
     const [posts, setPosts] = useState([]);
     const [comment, setComment] = useState('');
     const [postOpened, setPostOpened] = useState({
@@ -51,10 +56,10 @@ const PostDetail = (props) => {
          ],
         })
         return
-        };
-    
-        await updateDoc(doc(db, "posts", post.id),
-        {
+      };
+      
+      await updateDoc(doc(db, "posts", post.id),
+      {
          likes: [
            ...post.likes,
            {
@@ -69,7 +74,7 @@ const PostDetail = (props) => {
         const dataA = a.date.seconds * 1000 + a.date.nanoseconds / 1000000; // Convertendo para milissegundos
         const dataB = b.date.seconds * 1000 + b.date.nanoseconds / 1000000; // Convertendo para milissegundos
       
-        if (dataA > dataB) {
+        if (dataA < dataB) {
           return -1; // Retorna -1 se a data de A for maior (mais atual)
         } else if (dataA < dataB) {
           return 1; // Retorna 1 se a data de B for maior (mais antigo)
@@ -123,21 +128,45 @@ const PostDetail = (props) => {
         }
         );
         setComment('');
+        setTimeout(() => {
+          commentsContainerRef.current.scrollTo({
+            top: commentsContainerRef.current.scrollHeight,
+            behavior: 'smooth',
+          });
+          
+        }, 1500);
       } catch(error){
         console.log(error)
       }
       ;
-    
-        
-      };
+      
+      
+    };
 
-      useEffect(() => {
-        const q = query(collection(db, 'posts'));
-        const unsubscribe = onSnapshot(q, (querySnapshot) => {
-          const posts = [];
+  
+    // useEffect(() => {
+    //   // Verifica se a referência à seção de comentários é válida
+    //   if (commentsContainerRef.current) {
+    //     // Função para rolar a seção de comentários até o final
+    //     const scrollToBottom = () => {
+    //       commentsContainerRef.current.scrollTop = commentsContainerRef.current.scrollHeight;
+    //     };
+  
+    //     // Aguarda 100 milissegundos para garantir que o DOM esteja atualizado
+    //     const timeoutId = setTimeout(scrollToBottom, 2000);
+  
+    //     // Limpa o timeout quando o componente é desmontado
+    //     return () => clearTimeout(timeoutId);
+    //   }
+    // }, [postOpened.comments]);
     
-          querySnapshot.forEach((doc) => {
-            posts.push({...doc.data(), id: doc.id});
+    useEffect(() => {
+      const q = query(collection(db, 'posts'));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const posts = [];
+        
+        querySnapshot.forEach((doc) => {
+          posts.push({...doc.data(), id: doc.id});
           })
     
           setPosts(posts);
@@ -148,34 +177,34 @@ const PostDetail = (props) => {
       
       
 
+
       useEffect(() => {
         posts.filter((post) => post.id === props.id).map((post) => {
           setPostOpened(post);
           props.setLevel(post.level);
+          
         }
         )
       }, [posts]);
     
 
 
-      
-
   return (
     <div className="col-span-10 row-span-6   rounded-lg text-center overflow-auto max-h-[100vh]">
       
       <div className="text-2xl  mb-4 flex flex-1 items-center justify-start">
-        <Link href={postOpened.level ? '/secretview' : '/openview'} className="text-white"><IoArrowBack className="text-white"/></Link> <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">   {postOpened.level ? <span className='text-red-400'>Privado</span> : <span className='text-white'>Público</span>}</h2></div>
+        <Link href={postOpened.level ? '/secretview' : '/openview'} className="text-white"><IoArrowBack className="text-white"/></Link> <TbMessageShare className='text-[40px] text-purple-800 mx-4'/><h2 className="text-white">   {postOpened.level ? <span className='text-red-400'>Post Privado</span> : <span className='text-white'>Post Público</span>}</h2></div>
       {/* <p>aqui vai o conteudo aberto</p> */}
 
-      <div className=' flex flex-col items-start '>
+      <div    className=' flex flex-col items-start '>
 
       
       {posts.filter((post) => post.id === props.id).map((post)=>{
         // console.log(post)
         
         return (
-          <div key={post._id} className={`flex max-[900px]:flex-col flex-row justify-between h-[77.6vh] gap-4 w-[100%] ${posts.filter((post) => post.id !== props.id) === undefined ? 'mx-[10%]' : ' '}`}>
-          <div className="bg-gray-100 rounded-lg  shadow-md p-4 flex flex-col justify-between  w-[100%]  mb-4 overflow-auto overflow-x-hidden " >
+          <div key={post._id}   className={`flex max-[900px]:flex-col flex-row justify-between h-[77.6vh] gap-4 w-[100%] ${posts.filter((post) => post.id !== props.id) === undefined ? 'mx-[10%]' : ' '}`}>
+          <div ref={commentsContainerRef} className="bg-gray-100 rounded-lg  shadow-md p-4 flex flex-col justify-between  w-[100%]  mb-4 overflow-auto overflow-x-hidden " >
             <div className='flex flex-row justify-between'>
                 <h2 className='text-3xl font-extrabold  text-left  capitalize'>{post.title}</h2>
                 <div className='flex flex-row gap-4'> 
@@ -219,9 +248,21 @@ const PostDetail = (props) => {
               
               
               </div> */}
-              <div className="flex flex-col gap-4 rounded w-full mt-4" id='comments'>
+              <div  className="flex flex-col gap-4 rounded w-full mt-4 overflow: scroll"  id='comments'>
               {post.comments.length > 0 && post.comments.sort(compararDatas).map((comment) => {
-                console.log(post)
+                
+                // console.log(comment)
+               
+              if (commentsContainerRef.current) {
+                setTimeout(() => {
+                  commentsContainerRef.current.scrollTo({
+                    top: commentsContainerRef.current.scrollHeight,
+                    behavior: 'smooth',
+                  });
+                  
+                }, 1500);
+              }
+        
                 return (
                   <div key={comment._id} className={`flex flex-row items-start gap-4  ${post.createdBy.id === comment.user.id ? 'justify-end' : 'justify-start'}`}>
                     {post.createdBy.id === comment.user.id  ? 

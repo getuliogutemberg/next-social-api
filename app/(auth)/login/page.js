@@ -106,7 +106,7 @@ export default function Login() {
 
       <div className="w-full max-w-md p-4 bg-white rounded-md">
         <div className="flex flex-row items-center justify-center">
-        <FiLogIn className='text-[40px] text-purple-800 my-4'/>
+        <FiLogIn className='text-[40px] text-green-600 my-4'/>
         <h2 className="text-3xl font-extrabold text-gray-900 text-center mx-[20px] "> Login</h2>
         </div>
         <form onSubmit={handleSubmit}>
@@ -134,7 +134,7 @@ export default function Login() {
           </div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring focus:ring-purple-900 "
+            className="w-full py-2 px-4 bg-purple-900 text-white rounded-lg hover:bg-green-600 focus:outline-none focus:ring focus:ring-purple-600 "
           >
             Entrar
           </button>
@@ -148,7 +148,7 @@ export default function Login() {
         
       </div>
 
-      <Link href="/" className={`flex items-center justify-center gap-2 text-2xl text-gray-300 hover:text-purple-800`} >
+      <Link href="/" className={`flex items-center justify-center gap-2 text-2xl text-gray-300 hover:text-green-600`} >
         <FiHome className='text-[40px] flex items-center justify-center '/><h3 className='text-white font-extrabold text-xl'>Inicio</h3>
       </Link>
      

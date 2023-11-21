@@ -62,12 +62,12 @@ export default function Admin() {
     {user !== undefined && user.admin === true && <div className="col-span-6 row-span-6">
         <div className="bg-white rounded-lg shadow-md text-center h-full p-4 gap-4 flex flex-col">
           <h2 className="text-2xl font-extrabold mb-4 flex items-center justify-center">
-            <FiSettings className='text-[40px] text-purple-800 mx-4'/>Configurações
+            <FiSettings className='text-[40px] text-green-600 mx-4'/>Configurações
           </h2>
           <h2 className="text-2xl font-extrabold mb-4 text-left">Usuários Cadastrados</h2>
           <table className="w-full border">
             <thead className='text-left border'>
-              <tr className='bg-purple-800 text-white'>
+              <tr className='bg-green-600 text-white'>
                 <th className="text-left font-medium p-2 border">Nome</th>
                 <th className="text-left font-medium p-2 border">Email</th>
                 <th className="text-left font-medium p-2 border" >Status</th>
@@ -86,13 +86,13 @@ export default function Admin() {
                   <td className="p-2 flex gap-2 justify-end">
                     <button
                       onClick={() => router.push(`/profile/${user.id}`)}
-                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                      className="bg-purple-800 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
                     >
                       Editar Cadastro
                     </button>
                     <button
                       onClick={() => router.push(`/newpassword/${user.id}`)}
-                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                      className="bg-purple-800 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
                     >
                       Editar Senha
                     </button>
@@ -101,7 +101,7 @@ export default function Admin() {
                         await deleteDoc(doc(db, 'users', user.id))
 
                       }}
-                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                      className="bg-purple-800 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
                     >
                       Deletar
                     </button>
@@ -115,7 +115,7 @@ export default function Admin() {
 <h2 className='text-2xl font-extrabold mb-4 text-left'>Posts Cadastrados</h2>
           <table className="w-full border">
             <thead className='text-left border'>
-              <tr className='bg-purple-800 text-white'>
+              <tr className='bg-green-600 text-white'>
                 <th className="text-left font-medium p-2 border">Post</th>
                 <th className="text-left font-medium p-2 border">Data</th>
                 <th className="text-left font-medium p-2 border">Nivel</th>
@@ -140,7 +140,7 @@ export default function Admin() {
                   <td className="p-2 flex gap-2 justify-end">
                     <button
                       onClick={() => router.push(`/post/${post.id}`)}
-                      className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-2 px-4 rounded"
+                      className="bg-purple-800 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
                     >
                       Editar Post
                     </button>
