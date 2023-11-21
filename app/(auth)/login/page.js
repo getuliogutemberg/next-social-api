@@ -9,7 +9,7 @@ import { doc, getDocs,collection, query, updateDoc, where, limit } from "firebas
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import {db} from '../../firebase';
 
-
+ 
 
 export default function Login() {
   const auth = getAuth();
