@@ -1,4 +1,4 @@
-# API
+# Interface
 
 Bem-vindo. Esta aplicação seraum ponto de partida.
 Esta é uma interface de exemplo construído usando next.js react.js Firebase e outras bibliotecas para criar uma aplicação. Possui funcionalidades como autenticação de usuários, manipulação de posts, envio de e-mails e upload de documentos PDF.
